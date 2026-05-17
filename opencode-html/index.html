@@ -428,26 +428,32 @@
 
       .section-head {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 0.55fr);
-        gap: var(--space-4);
+        grid-template-columns: minmax(0, 0.76fr) minmax(20rem, 0.42fr);
+        gap: clamp(var(--space-5), 6vw, var(--space-6));
         align-items: end;
         margin-bottom: var(--space-5);
       }
 
+      .section-head > div {
+        min-width: 0;
+      }
+
       .section h2 {
-        max-width: 12ch;
+        max-width: 13ch;
         margin-bottom: 0;
         font-family: var(--font-display);
-        font-size: clamp(3.1rem, 8vw, 8.2rem);
-        line-height: 0.82;
-        letter-spacing: -0.08em;
+        font-size: clamp(2.9rem, 6.15vw, 6.6rem);
+        line-height: 1.02;
+        letter-spacing: -0.055em;
         text-transform: uppercase;
       }
 
       .section-head p {
+        max-width: 34rem;
         margin-bottom: 0;
         color: var(--ink-soft);
         font-size: clamp(1rem, 1.5vw, 1.22rem);
+        justify-self: end;
       }
 
       .identity-grid {
@@ -615,6 +621,10 @@
         animation: rotate-slow 34s linear infinite reverse;
       }
 
+      .archive-actions {
+        margin: calc(var(--space-5) * -0.35) 0 var(--space-4);
+      }
+
       .archive {
         display: grid;
         gap: var(--space-2);
@@ -724,6 +734,7 @@
         .hero-console { min-height: 31rem; }
         .holo-card { right: 0; left: auto; }
         .theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .section-head p { justify-self: start; }
       }
 
       @media (max-width: 640px) {
@@ -753,7 +764,7 @@
         <a href="#identity">身份</a>
         <a href="#themes">主题</a>
         <a href="#projects">能力</a>
-        <a href="#archive">写作</a>
+        <a href="#archive">技术文章</a>
         <a href="resume.html">简历</a>
         <a href="#contact">连接</a>
       </nav>
@@ -768,8 +779,8 @@
             我把业务模型、后端架构、团队规范、CI/CD、知识库和 AI 工作流组织成一套可持续运转的工程秩序。这里不是普通简历，而是一张从本地 Obsidian 知识库提炼出的个人品牌星图。
           </p>
           <div class="hero-actions">
-            <a class="action primary" href="#projects">进入能力场 →</a>
-            <a class="action" href="#archive">查看知识档案</a>
+            <a class="action primary" href="#archive">进入技术文章 →</a>
+            <a class="action" href="#projects">查看能力场</a>
             <a class="action" href="resume.html">打开公开简历</a>
           </div>
         </div>
@@ -927,13 +938,19 @@
       <section id="archive" class="section" data-index="04">
         <div class="section-head reveal">
           <div>
-            <p class="section-tag">Writing / Archive Angle</p>
-            <h2>下一步，把知识库变成公开写作。</h2>
+            <p class="section-tag">Technical Articles / 17 Notes</p>
+            <h2>技术文章入口。</h2>
           </div>
-          <p>博客不必从“今天学了什么”开始，可以从“我如何把混乱变成系统”开始。以下是适合作为个人介绍博客栏目和文章方向的公开表达。</p>
+          <p>这里是从 raw 笔记整理出的技术文章列表，覆盖团队规范、后端分层、Git 流程、DevOps、VPN、Cloudflare、招聘画像和效率工具。</p>
         </div>
 
-        <div class="archive">
+        <div class="hero-actions archive-actions reveal">
+          <a class="action primary" href="posts/frontend-standards-guide.html">从前端规范开始 →</a>
+          <a class="action" href="posts/backend-development-standard.html">后端规范</a>
+          <a class="action" href="posts/jenkins-gitlab-laradock-sop.html">部署 SOP</a>
+        </div>
+
+        <div class="archive" aria-label="技术文章列表">
           <a class="archive-row reveal" href="posts/delivery-system-api.html">
             <span>01</span>
             <strong>研发规范不是文档，而是团队交付系统的 API</strong>
@@ -958,6 +975,66 @@
             <span>05</span>
             <strong>AI 不只是写代码：它也可以成为规范、文档和排障的协作者</strong>
             <em>AI Workflow</em>
+          </a>
+          <a class="archive-row reveal" href="posts/cloudflare-pages-deployment.html">
+            <span>06</span>
+            <strong>腾讯云域名接入 Cloudflare 与 Pages：从防护到静态站部署</strong>
+            <em>Cloudflare</em>
+          </a>
+          <a class="archive-row reveal" href="posts/laradock-github-actions-deploy.html">
+            <span>07</span>
+            <strong>Laradock + GitHub Actions：小服务器上的 Laravel 自动化部署</strong>
+            <em>Laravel Deploy</em>
+          </a>
+          <a class="archive-row reveal" href="posts/customer-distribution-model.html">
+            <span>08</span>
+            <strong>客户数据分配系统：从业务规则到可落表模型</strong>
+            <em>Business Model</em>
+          </a>
+          <a class="archive-row reveal" href="posts/frontend-standards-guide.html">
+            <span>09</span>
+            <strong>前端开发规范：命名、目录、编码与质量门禁</strong>
+            <em>Frontend Standard</em>
+          </a>
+          <a class="archive-row reveal" href="posts/technical-hiring-requirements.html">
+            <span>10</span>
+            <strong>技术团队招聘需求：从业务系统目标反推岗位配置</strong>
+            <em>Hiring System</em>
+          </a>
+          <a class="archive-row reveal" href="posts/git-workflow-standard.html">
+            <span>11</span>
+            <strong>Git 使用规范：分支、提测、上线与 Tag 流程</strong>
+            <em>Git Workflow</em>
+          </a>
+          <a class="archive-row reveal" href="posts/backend-development-standard.html">
+            <span>12</span>
+            <strong>后端开发规范：Laravel/Lumen 分层、配置与数据安全</strong>
+            <em>Backend Standard</em>
+          </a>
+          <a class="archive-row reveal" href="posts/yunshi-business-rules-summary.html">
+            <span>13</span>
+            <strong>业务规则整理：客户、订单、分配与报表口径</strong>
+            <em>Business Rules</em>
+          </a>
+          <a class="archive-row reveal" href="posts/vscode-shortcuts.html">
+            <span>14</span>
+            <strong>VS Code 高频快捷键：编辑、导航、多光标与调试</strong>
+            <em>Tooling</em>
+          </a>
+          <a class="archive-row reveal" href="posts/openvpn-split-tunnel.html">
+            <span>15</span>
+            <strong>OpenVPN 部署与内网分流：只让内网流量走 VPN</strong>
+            <em>VPN Ops</em>
+          </a>
+          <a class="archive-row reveal" href="posts/gitlab-jenkins-confluence-centos.html">
+            <span>16</span>
+            <strong>CentOS 部署 GitLab、Jenkins 与 Confluence：端口防冲突版</strong>
+            <em>Infra Stack</em>
+          </a>
+          <a class="archive-row reveal" href="posts/jenkins-gitlab-laradock-sop.html">
+            <span>17</span>
+            <strong>Jenkins + GitLab + Laradock 自动化部署 SOP</strong>
+            <em>Deploy SOP</em>
           </a>
         </div>
       </section>
