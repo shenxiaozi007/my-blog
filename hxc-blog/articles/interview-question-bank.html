@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>面试题库应该考察真实工程能力 | HXC Knowledge Lab</title>
+    <meta name="description" content="高级 PHP / Go 面试不仅问概念，还要看并发、数据库、缓存、MQ、网络排障和分布式取舍。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/interview-question-bank.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="面试题库应该考察真实工程能力 | HXC Knowledge Lab" />
+    <meta property="og:description" content="高级 PHP / Go 面试不仅问概念，还要看并发、数据库、缓存、MQ、网络排障和分布式取舍。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/interview-question-bank.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="面试题库应该考察真实工程能力 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="高级 PHP / Go 面试不仅问概念，还要看并发、数据库、缓存、MQ、网络排障和分布式取舍。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "面试题库应该考察真实工程能力",
+  "description": "高级 PHP / Go 面试不仅问概念，还要看并发、数据库、缓存、MQ、网络排障和分布式取舍。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/interview-question-bank.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "hiring, interview, go, php, test"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">招聘画像</p>
+        <h1>面试题库应该考察真实工程能力</h1>
+        <p class="article-description">高级 PHP / Go 面试不仅问概念，还要看并发、数据库、缓存、MQ、网络排障和分布式取舍。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>15 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>hiring</span>
+          <span>interview</span>
+          <span>go</span>
+          <span>php</span>
+          <span>test</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《来源_招聘需求》《来源_面试题参考》《测试工程师面试文档_面试官版》和技术招聘画像实体页整理。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-从岗位目标反推题目">从岗位目标反推题目</a><a href="#section-2-高级后端怎么问">高级后端怎么问</a><a href="#section-3-测试和前端也要场景化">测试和前端也要场景化</a><a href="#section-4-岗位画像比题库更重要">岗位画像比题库更重要</a><a href="#section-5-后端题目要追问机制和取舍">后端题目要追问机制和取舍</a><a href="#section-6-测试岗位要看问题闭环">测试岗位要看问题闭环</a><a href="#section-7-评分表要减少拍脑袋">评分表要减少拍脑袋</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-从岗位目标反推题目" class="article-section">
+            <h2>从岗位目标反推题目</h2>
+            <p>面试题库不应该只是技术名词列表。真正有效的题目来自岗位要解决的问题：这个人是否能独立交付业务模块，是否能定位线上问题，是否理解数据库和缓存边界，是否能在成本、复杂度和稳定性之间做取舍。</p>
+            <p>后端、前端、测试、移动端和 UI 的题库都应该围绕真实交付场景设计。</p>
+            <ul>
+              <li>考察原理，也考察排障。</li>
+              <li>考察设计，也考察落地成本。</li>
+              <li>考察个人能力，也考察协作习惯。</li>
+              <li>避免只背 API 的题目。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-高级后端怎么问" class="article-section">
+            <h2>高级后端怎么问</h2>
+            <p>高级 PHP / Go 后端可以从框架、中间件、并发、数据库、缓存、消息队列、网络和系统设计展开。题目要鼓励候选人讲出机制、风险和替代方案，而不是给出唯一标准答案。</p>
+            <p>比如问缓存击穿时，不只问定义，还要问业务中哪些 key 风险最高、如何设置互斥、是否允许短暂脏读、失败时如何降级。</p>
+            <ul>
+              <li>数据库：索引、事务、锁、慢查询。</li>
+              <li>缓存：穿透、击穿、雪崩、一致性。</li>
+              <li>MQ：幂等、重试、顺序、死信。</li>
+              <li>网络：DNS、TLS、超时、连接池。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-测试和前端也要场景化" class="article-section">
+            <h2>测试和前端也要场景化</h2>
+            <p>测试岗位要看接口测试、自动化、性能、SQL、Linux、CI/CD 和问题定位。前端岗位要看 Vue 体系、状态管理、组件设计、工程化、性能、移动端兼容和用户体验细节。</p>
+            <p>面试最终不是为了难倒候选人，而是判断他能否进入团队现有交付体系。</p>
+            <ul>
+              <li>给一个真实缺陷，看定位思路。</li>
+              <li>给一个复杂表单，看拆解能力。</li>
+              <li>给一个发布事故，看复盘框架。</li>
+              <li>给一个需求变更，看取舍表达。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-岗位画像比题库更重要" class="article-section">
+            <h2>岗位画像比题库更重要</h2>
+            <p>知识库中的招聘资料覆盖 PHP、Go、前端、测试、移动端和 UI。题库只是工具，真正决定面试质量的是岗位画像：这个岗位进入团队后要解决什么问题，独立交付到什么程度，和谁协作，最容易踩什么坑。</p>
+            <p>如果没有画像，面试就会变成技术点抽查。候选人可能答对很多问题，但无法判断是否适合当前团队。</p>
+            <ul>
+              <li>先定义岗位要交付的业务模块。</li>
+              <li>再定义必须能力、加分能力和风险信号。</li>
+              <li>题目围绕真实工作场景设计。</li>
+              <li>面试记录要能支持录用或不录用判断。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-后端题目要追问机制和取舍" class="article-section">
+            <h2>后端题目要追问机制和取舍</h2>
+            <p>高级 PHP / Go 面试可以覆盖框架、中间件、并发、数据库、缓存、MQ、网络和系统设计。但每个问题都应该追问机制和取舍。比如问 Redis，不只问数据类型，还要问缓存一致性、击穿防护、热点 key、降级策略和监控指标。</p>
+            <p>候选人能不能讲清楚边界，比能不能背出标准定义更重要。</p>
+            <ul>
+              <li>数据库问题追问索引、锁、事务和慢查询定位。</li>
+              <li>缓存问题追问穿透、击穿、雪崩和一致性。</li>
+              <li>MQ 问题追问幂等、重试、顺序和死信。</li>
+              <li>Go 问题追问 goroutine 泄漏、context、channel 和调度。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-测试岗位要看问题闭环" class="article-section">
+            <h2>测试岗位要看问题闭环</h2>
+            <p>测试工程师不只是点页面。知识库里的测试面试材料强调功能、接口、自动化、性能、SQL、Linux 和 CI/CD。更重要的是问题闭环：发现问题、定位问题、复现问题、推动修复、补充用例。</p>
+            <p>一个好的测试候选人会主动问业务风险，而不只是照着需求文档逐条执行。</p>
+            <ul>
+              <li>给一个接口异常，让候选人说排查路径。</li>
+              <li>给一个业务流程，让候选人设计用例。</li>
+              <li>给一个线上缺陷，让候选人描述复盘。</li>
+              <li>关注 SQL、日志、抓包和 CI 使用能力。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-评分表要减少拍脑袋" class="article-section">
+            <h2>评分表要减少拍脑袋</h2>
+            <p>面试之后最怕一句“感觉还行”。建议用结构化评分表，把能力拆成基础能力、工程经验、问题定位、沟通协作、业务理解、成长性和风险点。</p>
+            <p>评分表不是为了机械化，而是为了让多个面试官可以对齐口径。</p>
+            <ul>
+              <li>每个维度给 1-5 分和证据。</li>
+              <li>记录候选人的具体回答和案例。</li>
+              <li>区分不会、没做过、做过但讲不清。</li>
+              <li>明确录用建议和入职后培养重点。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid"></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

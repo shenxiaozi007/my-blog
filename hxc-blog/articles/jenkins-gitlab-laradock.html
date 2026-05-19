@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jenkins + GitLab + Laradock 自动化部署 SOP | HXC Knowledge Lab</title>
+    <meta name="description" content="内网环境下，Jenkins 拉取 GitLab 代码，rsync 同步到目标机，并在 Laradock workspace 中执行 composer install。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/jenkins-gitlab-laradock.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="Jenkins + GitLab + Laradock 自动化部署 SOP | HXC Knowledge Lab" />
+    <meta property="og:description" content="内网环境下，Jenkins 拉取 GitLab 代码，rsync 同步到目标机，并在 Laradock workspace 中执行 composer install。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/jenkins-gitlab-laradock.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Jenkins + GitLab + Laradock 自动化部署 SOP | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="内网环境下，Jenkins 拉取 GitLab 代码，rsync 同步到目标机，并在 Laradock workspace 中执行 composer install。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Jenkins + GitLab + Laradock 自动化部署 SOP",
+  "description": "内网环境下，Jenkins 拉取 GitLab 代码，rsync 同步到目标机，并在 Laradock workspace 中执行 composer install。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/jenkins-gitlab-laradock.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "devops, jenkins, gitlab, laradock"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">DevOps</p>
+        <h1>Jenkins + GitLab + Laradock 自动化部署 SOP</h1>
+        <p class="article-description">内网环境下，Jenkins 拉取 GitLab 代码，rsync 同步到目标机，并在 Laradock workspace 中执行 composer install。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>17 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>devops</span>
+          <span>jenkins</span>
+          <span>gitlab</span>
+          <span>laradock</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《来源_Jenkins_GitLab_Laradock自动化部署SOP》《概念_Laradock自动化部署》和工程基础设施平台实体页整理。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-部署链路的基本形态">部署链路的基本形态</a><a href="#section-2-流水线步骤">流水线步骤</a><a href="#section-3-上线前后检查">上线前后检查</a><a href="#section-4-两条-ssh-信任链">两条 SSH 信任链</a><a href="#section-5-rsync-的排除列表很关键">rsync 的排除列表很关键</a><a href="#section-6-composer-install-为什么每次都跑">composer install 为什么每次都跑</a><a href="#section-7-jenkins-job-的最小验收">Jenkins Job 的最小验收</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-部署链路的基本形态" class="article-section">
+            <h2>部署链路的基本形态</h2>
+            <p>中小团队常见的内网部署链路是 GitLab 托管代码，Jenkins 负责拉取和执行流水线，目标服务器使用 Laradock 提供 PHP、Nginx、MySQL、Redis 等运行环境。Jenkins 可以把代码同步到目标目录，然后进入 workspace 容器执行依赖安装和缓存命令。</p>
+            <p>这条链路的重点不是工具名，而是信任链、环境隔离和发布动作可重复。</p>
+            <ul>
+              <li>Jenkins 使用只读 Deploy Key 拉取代码。</li>
+              <li>目标服务器通过 SSH Key 接受 Jenkins 同步。</li>
+              <li>.env 文件由目标环境维护，不进入仓库。</li>
+              <li>vendor、storage 缓存和日志不直接从构建机覆盖。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-流水线步骤" class="article-section">
+            <h2>流水线步骤</h2>
+            <p>一个稳妥的流程通常包括拉取代码、安装前检查、rsync 同步、容器内 composer install、Laravel 缓存刷新、权限修正和健康检查。每一步都应该能从日志里看出成功或失败。</p>
+            <p>如果部署脚本只能在某个人电脑上跑，它就还不是团队资产。Jenkins 的价值在于把发布动作固化成可复用流程。</p>
+            <ul>
+              <li>拉取指定分支或 Tag。</li>
+              <li>同步时排除 .env、vendor、storage/logs。</li>
+              <li>容器内执行 composer install --no-dev。</li>
+              <li>执行 config:cache、route:cache、queue 重启等收尾命令。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-上线前后检查" class="article-section">
+            <h2>上线前后检查</h2>
+            <p>部署成功不等于上线成功。上线前要确认分支、提交、数据库变更、环境变量和回滚方案。上线后要确认 HTTP 状态、队列、日志、关键接口和错误告警。</p>
+            <p>这些检查最好写进发布清单，而不是靠经验记忆。</p>
+            <ul>
+              <li>确认 Migration 是否需要手动窗口。</li>
+              <li>确认队列消费者是否重启。</li>
+              <li>确认 Nginx / PHP-FPM / Supervisor 状态。</li>
+              <li>保留本次发布日志和版本号。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-两条-ssh-信任链" class="article-section">
+            <h2>两条 SSH 信任链</h2>
+            <p>知识库里的 SOP 明确指出，自动化部署要先打通两条 SSH 通道：Jenkins 到 GitLab 用于拉代码，Jenkins 到目标测试机用于 rsync 和远程命令。很多部署失败不是脚本问题，而是信任链没有分清。</p>
+            <p>Jenkins 拉 GitLab 应该用 GitLab Deploy Key，默认只读；Jenkins 到目标机可以使用独立 jenkins 用户，只授权具体项目目录。</p>
+            <ul>
+              <li>Jenkins -&gt; GitLab：Deploy Key，只读。</li>
+              <li>Jenkins -&gt; 目标测试机：SSH 免密，最小目录权限。</li>
+              <li>不要给 /var/www 整体 777。</li>
+              <li>不要让 Jenkins 覆盖目标机 .env。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-rsync-的排除列表很关键" class="article-section">
+            <h2>rsync 的排除列表很关键</h2>
+            <p>rsync --delete 很强，也很危险。它能让目标目录与工作区保持一致，但如果排除列表没写好，可能覆盖 .env、删除日志、同步 vendor 或 node_modules，导致环境混乱。</p>
+            <p>知识库 SOP 建议排除 .git、.env、node_modules、vendor、storage/logs 等路径。依赖安装应该在目标机 Laradock workspace 容器中执行。</p>
+            <ul>
+              <li>排除 .env，环境配置由目标机维护。</li>
+              <li>排除 vendor，在目标环境 composer install。</li>
+              <li>排除 storage/logs，保留运行日志。</li>
+              <li>排除 node_modules，避免无意义大文件同步。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-composer-install-为什么每次都跑" class="article-section">
+            <h2>composer install 为什么每次都跑</h2>
+            <p>有些部署脚本会用 git diff HEAD~1 判断 composer.lock 是否变化，但知识库里不推荐依赖这种方式。Jenkins 可能是 shallow clone，合并提交和回滚提交也会让 diff 逻辑复杂。</p>
+            <p>更稳的做法是每次部署都执行 composer install。Composer 会根据 lock 文件判断实际安装内容，未变化时成本通常可接受。</p>
+            <ul>
+              <li>生产部署使用 composer install，不使用 composer update。</li>
+              <li>composer.lock 必须提交到仓库。</li>
+              <li>安装在 Laradock workspace 容器内执行。</li>
+              <li>失败时停止发布，不继续刷新缓存。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-jenkins-job-的最小验收" class="article-section">
+            <h2>Jenkins Job 的最小验收</h2>
+            <p>部署脚本跑完，只看 Jenkins 成功是不够的。至少要验证 rsync 是否成功、composer 是否成功、目标目录是否保留环境文件、站点或接口是否可访问。</p>
+            <p>这些检查可以先人工做，之后逐步脚本化，变成 Job 的后置健康检查。</p>
+            <ul>
+              <li>Console Output 中无 rsync 和 composer 错误。</li>
+              <li>目标项目目录没有被覆盖 .env。</li>
+              <li>Laravel/Lumen 能启动或健康接口返回正常。</li>
+              <li>失败日志能定位到 Git、SSH、Docker、Composer 哪一层。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="github-actions-laradock.html">
+            <span>DevOps</span>
+            <strong>GitHub Actions + Laradock：小服务器自动部署</strong>
+            <em>15 分钟阅读</em>
+          </a>
+          <a class="related-card" href="cloudflare-origin-protection.html">
+            <span>DevOps</span>
+            <strong>Cloudflare 源站保护：代理开启只是第一步</strong>
+            <em>13 分钟阅读</em>
+          </a>
+          <a class="related-card" href="openvpn-split-tunnel.html">
+            <span>DevOps</span>
+            <strong>OpenVPN Split Tunnel：只让内网流量走 VPN</strong>
+            <em>13 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

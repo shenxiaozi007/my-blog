@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>客户分配系统：从顾问 ID 到事件链 | HXC Knowledge Lab</title>
+    <meta name="description" content="客户分配不是写入一个归属字段，而是一条包含入池、分级、候选过滤、派发、响应和回捞的事件链。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/customer-assignment-events.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="客户分配系统：从顾问 ID 到事件链 | HXC Knowledge Lab" />
+    <meta property="og:description" content="客户分配不是写入一个归属字段，而是一条包含入池、分级、候选过滤、派发、响应和回捞的事件链。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/customer-assignment-events.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="客户分配系统：从顾问 ID 到事件链 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="客户分配不是写入一个归属字段，而是一条包含入池、分级、候选过滤、派发、响应和回捞的事件链。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "客户分配系统：从顾问 ID 到事件链",
+  "description": "客户分配不是写入一个归属字段，而是一条包含入池、分级、候选过滤、派发、响应和回捞的事件链。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/customer-assignment-events.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "business, crm, assignment"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">业务系统</p>
+        <h1>客户分配系统：从顾问 ID 到事件链</h1>
+        <p class="article-description">客户分配不是写入一个归属字段，而是一条包含入池、分级、候选过滤、派发、响应和回捞的事件链。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>19 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>business</span>
+          <span>crm</span>
+          <span>assignment</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《概念_云实客户数据分配规则》《来源_云实客户数据分配规范》和 CRM 业务系统实体页脱敏扩展。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-为什么不能只存当前归属">为什么不能只存当前归属</a><a href="#section-2-候选过滤应该配置化">候选过滤应该配置化</a><a href="#section-3-数据表和指标">数据表和指标</a><a href="#section-4-从入池开始-而不是从派发开始">从入池开始，而不是从派发开始</a><a href="#section-5-客户等级与顾问等级匹配">客户等级与顾问等级匹配</a><a href="#section-6-排班用半小时粒度更适合分配">排班用半小时粒度更适合分配</a><a href="#section-7-10-分钟响应与-90-天回捞">10 分钟响应与 90 天回捞</a><a href="#section-8-与权限系统联动">与权限系统联动</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-为什么不能只存当前归属" class="article-section">
+            <h2>为什么不能只存当前归属</h2>
+            <p>客户分配看起来是把 customer.adviser_id 写成某个人，但业务真正关心的是这次分配为什么发生、依据哪套规则、候选人有哪些、谁被过滤、顾问是否响应、后续是否回捞。只存当前归属会丢掉这些解释能力。</p>
+            <p>当客户投诉、顾问绩效、渠道结算或分配公平性出现争议时，系统必须能回放事件链。</p>
+            <ul>
+              <li>入池事件记录客户来源和初始标签。</li>
+              <li>分级事件记录客户等级、渠道和价值判断。</li>
+              <li>派发事件记录规则版本和命中原因。</li>
+              <li>回捞事件记录超时、无人响应或规则触发条件。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-候选过滤应该配置化" class="article-section">
+            <h2>候选过滤应该配置化</h2>
+            <p>好的分配系统会先生成候选顾问，再逐层过滤。过滤条件包括顾问等级、服务范围、排班状态、当前容量、暂停接单、历史冲突、客户标签匹配等。每个过滤动作最好能留下原因。</p>
+            <p>这些规则不要写死在单个方法里。随着业务变化，运营会希望调整等级权重、容量阈值、渠道优先级和超时策略。配置化不是为了复杂，而是为了让变化有入口。</p>
+            <ul>
+              <li>顾问等级和客户等级要能映射。</li>
+              <li>排班和暂停状态属于强过滤。</li>
+              <li>容量和转化率可以进入排序权重。</li>
+              <li>规则版本要写入分配记录。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-数据表和指标" class="article-section">
+            <h2>数据表和指标</h2>
+            <p>客户分配至少需要当前归属表和分配事件表。当前归属服务于查询效率，事件表服务于回放和审计。指标层可以统计响应时长、首响率、回捞率、顾问负载和分配成功率。</p>
+            <p>这类系统最怕一开始只有状态字段，后面再补事件会非常痛。尽早把事件作为一等公民，后续业务会轻松很多。</p>
+            <ul>
+              <li>当前状态用于列表筛选。</li>
+              <li>事件表用于追踪和审计。</li>
+              <li>指标不要直接依赖可变状态字段。</li>
+              <li>人工改派也必须写事件。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-从入池开始-而不是从派发开始" class="article-section">
+            <h2>从入池开始，而不是从派发开始</h2>
+            <p>知识库里的客户分配规则把客户资源分为流量用户、存量用户和离职用户，并由运营中心统一入池。这个视角比“系统把客户派给谁”更完整，因为分配前已经发生了来源识别、重复判断、客户定级和可分配状态判断。</p>
+            <p>如果没有入池事件，后续所有派发都缺少上下文。</p>
+            <ul>
+              <li>记录客户来源、渠道、创建时间和原始标签。</li>
+              <li>记录重复客户判断结果。</li>
+              <li>记录是否进入可分配池。</li>
+              <li>记录不可分配原因，例如资料不完整或黑名单。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-客户等级与顾问等级匹配" class="article-section">
+            <h2>客户等级与顾问等级匹配</h2>
+            <p>知识库中的规则提到客户等级 S/A/B/C/D 和顾问等级 S/A/B。高价值客户优先匹配高能力顾问，这是业务公平与转化效率之间的折中。关键是等级不要写死在代码里，而要配置化并保留历史快照。</p>
+            <p>客户等级可能来自存量资金、口头预算、险种需求、渠道质量等因素；顾问等级可能来自近三个月成交率、产能、创收、投诉和质检结果。</p>
+            <ul>
+              <li>客户等级规则配置化，支持版本管理。</li>
+              <li>顾问评分周期固定，保留历史快照。</li>
+              <li>分配记录写入当时客户等级和顾问等级。</li>
+              <li>等级调整不应反向篡改历史分配依据。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-排班用半小时粒度更适合分配" class="article-section">
+            <h2>排班用半小时粒度更适合分配</h2>
+            <p>客户分配不是只看顾问是否在职，还要看当前时间片是否可接单。知识库建议排班状态使用日期 + 半小时粒度，这样能表达上午、下午、会议、培训、暂停接单等细节。</p>
+            <p>系统实现上，长表比宽表更适合查询和扩展。每个时间片是一条记录，可以按顾问、日期、时间段快速过滤。</p>
+            <ul>
+              <li>排班状态进入强过滤，不可接单直接排除。</li>
+              <li>暂停派发、投诉、质检异常也应进入过滤。</li>
+              <li>容量阈值可以作为排序或过滤条件。</li>
+              <li>排班变更要记录操作人和时间。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-10-分钟响应与-90-天回捞" class="article-section">
+            <h2>10 分钟响应与 90 天回捞</h2>
+            <p>知识库中有两个很业务化的约束：接单后 10 分钟内联系并反馈状态，超过 90 天未成交可引导客户更换顾问。它们说明分配系统不是一次性派发，而是持续经营链路。</p>
+            <p>这类时效规则一定要事件化。否则系统只能看到当前状态，看不到顾问是否及时响应，也看不到回捞依据是否成立。</p>
+            <ul>
+              <li>接单、首次联系、反馈状态都写事件。</li>
+              <li>超时未响应触发提醒或停派。</li>
+              <li>90 天回捞需要明确成交口径。</li>
+              <li>人工豁免需要记录原因。</li>
+            </ul>
+          </section>
+
+          <section id="section-8-与权限系统联动" class="article-section">
+            <h2>与权限系统联动</h2>
+            <p>客户分配天然和权限系统绑定。普通顾问只看自己的分配客户，团队长看团队结果，运营中心可以入池、分配、回捞、改派和停派，财务或佣金字段则需要单独授权。</p>
+            <p>分配事件如果没有权限审计，很容易在争议时说不清楚谁改了归属、为什么改、改之前是什么状态。</p>
+            <ul>
+              <li>改派、回捞、导出必须有独立权限。</li>
+              <li>分配事件记录操作者和规则版本。</li>
+              <li>数据范围决定客户列表可见性。</li>
+              <li>敏感字段独立控制，避免通过客户详情泄露。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="controller-business-dao.html">
+            <span>后端架构</span>
+            <strong>Controller / Business / DAO：复杂业务的容器</strong>
+            <em>17 分钟阅读</em>
+          </a>
+          <a class="related-card" href="crm-permission-tree.html">
+            <span>业务系统</span>
+            <strong>CRM 权限树：菜单、按钮、数据范围为什么要拆开</strong>
+            <em>18 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

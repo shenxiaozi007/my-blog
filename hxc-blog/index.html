@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HXC Knowledge Lab | 工程交付与个人知识系统</title>
+    <meta
+      name="description"
+      content="HXC 的个人知识分享网站：公开化整理工程交付、团队规范、后端架构、DevOps、业务系统、招聘画像、效率工具与 LLM Wiki 知识管理方法。"
+    />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/" />
+    <link rel="sitemap" type="application/xml" href="https://my.hxcbox.cn/sitemap.xml" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="HXC Knowledge Lab | 工程交付与个人知识系统" />
+    <meta
+      property="og:description"
+      content="从个人 Obsidian 知识库提炼出的工程交付、系统设计、团队规范和知识管理方法。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://my.hxcbox.cn/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="HXC Knowledge Lab | 工程交付与个人知识系统" />
+    <meta
+      name="twitter:description"
+      content="从个人 Obsidian 知识库提炼出的工程交付、系统设计、团队规范和知识管理方法。"
+    />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script type="application/ld+json">{
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "HXC Knowledge Lab 文章列表",
+      "itemListElement": [
+            {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "url": "https://my.hxcbox.cn/articles/git-branch-flow.html",
+                  "name": "Git 分支环境映射：让代码流向可控",
+                  "description": "用 master、beta、dev、fix 对应生产、测试、需求和修复，避免环境污染和合并方向混乱。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "url": "https://my.hxcbox.cn/articles/frontend-vs-backend-standards.html",
+                  "name": "前端规范 vs 后端规范：同一交付体系的两侧",
+                  "description": "前端关注工程化、可访问性、组件边界和构建检查；后端关注分层、配置、安全和数据库变更。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "url": "https://my.hxcbox.cn/articles/controller-business-dao.html",
+                  "name": "Controller / Business / DAO：复杂业务的容器",
+                  "description": "把输入输出、规则编排、事务边界和数据访问拆开，才能让需求变更有清晰落点。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 4,
+                  "url": "https://my.hxcbox.cn/articles/crm-permission-tree.html",
+                  "name": "CRM 权限树：菜单、按钮、数据范围为什么要拆开",
+                  "description": "页面可见、动作可执行、数据可访问是三件不同的事。混在一起会让后台权限越来越难维护。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 5,
+                  "url": "https://my.hxcbox.cn/articles/customer-assignment-events.html",
+                  "name": "客户分配系统：从顾问 ID 到事件链",
+                  "description": "客户分配不是写入一个归属字段，而是一条包含入池、分级、候选过滤、派发、响应和回捞的事件链。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 6,
+                  "url": "https://my.hxcbox.cn/articles/jenkins-gitlab-laradock.html",
+                  "name": "Jenkins + GitLab + Laradock 自动化部署 SOP",
+                  "description": "内网环境下，Jenkins 拉取 GitLab 代码，rsync 同步到目标机，并在 Laradock workspace 中执行 composer install。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 7,
+                  "url": "https://my.hxcbox.cn/articles/github-actions-laradock.html",
+                  "name": "GitHub Actions + Laradock：小服务器自动部署",
+                  "description": "中小规格云服务器要先解决 Swap、SSH 信任链、Deploy Key、容器路径和生产收尾检查。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 8,
+                  "url": "https://my.hxcbox.cn/articles/cloudflare-origin-protection.html",
+                  "name": "Cloudflare 源站保护：代理开启只是第一步",
+                  "description": "真正的保护来自 DNS 接管、橙色云朵代理和源站安全组白名单共同生效。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 9,
+                  "url": "https://my.hxcbox.cn/articles/openvpn-split-tunnel.html",
+                  "name": "OpenVPN Split Tunnel：只让内网流量走 VPN",
+                  "description": "分流策略可以兼顾内网访问和公网直连体验，但必须补齐服务端路由、IP 转发和回程路由。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 10,
+                  "url": "https://my.hxcbox.cn/articles/llm-wiki-system.html",
+                  "name": "LLM Wiki：让知识库成为可复利资产",
+                  "description": "Raw、Sources、Entities、Concepts、Comparisons、Overview 和 Log 分工明确，LLM 负责维护结构。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 11,
+                  "url": "https://my.hxcbox.cn/articles/interview-question-bank.html",
+                  "name": "面试题库应该考察真实工程能力",
+                  "description": "高级 PHP / Go 面试不仅问概念，还要看并发、数据库、缓存、MQ、网络排障和分布式取舍。"
+            },
+            {
+                  "@type": "ListItem",
+                  "position": 12,
+                  "url": "https://my.hxcbox.cn/articles/vscode-core-shortcuts.html",
+                  "name": "VS Code 高频快捷键：先固化五个动作",
+                  "description": "命令面板、快速打开、多光标、格式化、全局搜索，是把重复操作键盘化的第一组动作。"
+            }
+      ]
+}</script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "HXC Knowledge Lab",
+        "url": "https://my.hxcbox.cn/",
+        "description": "HXC 的个人知识分享网站：公开化整理工程交付、团队规范、后端架构、DevOps、业务系统、招聘画像、效率工具与 LLM Wiki 知识管理方法。",
+        "inLanguage": "zh-CN",
+        "publisher": {
+          "@type": "Person",
+          "name": "HXC"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header" id="top">
+      <a class="brand" href="#top" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="#map">知识地图</a>
+        <a href="#topics">主题</a>
+        <a href="#notes">文章</a>
+        <a href="#systems">方法</a>
+        <a href="#about">关于</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Personal Knowledge Sharing Site</p>
+          <h1>把工程经验整理成可复用的知识系统。</h1>
+          <p class="lead">
+            这里不是传统博客，也不是简历页面，而是一个从 Obsidian 个人知识库公开化生成的知识分享入口。
+            它把研发规范、后端架构、业务系统、DevOps、招聘画像和效率工具组织成可阅读、可检索、可演进的工程知识地图。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#notes">开始阅读</a>
+            <a class="button" href="#systems">查看知识方法</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="知识库状态">
+          <div class="signal-row">
+            <span>公开知识主题</span>
+            <strong>6</strong>
+          </div>
+          <div class="signal-row">
+            <span>结构化文章</span>
+            <strong>18+</strong>
+          </div>
+          <div class="signal-row">
+            <span>知识类型</span>
+            <strong>Source / Entity / Concept</strong>
+          </div>
+          <div class="signal-row">
+            <span>更新方式</span>
+            <strong>Obsidian + LLM Wiki</strong>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section intro" id="map">
+        <div class="section-head">
+          <p class="eyebrow">Knowledge Map</p>
+          <h2>一张面向工程交付的知识地图。</h2>
+          <p>
+            当前知识库已经形成「规范—业务—平台—人才—效率—知识管理」六条主线。
+            这些内容来自个人长期项目记录、团队规范、部署 SOP、面试题库和 LLM Wiki 结构化整理。
+          </p>
+        </div>
+
+        <div class="map-grid">
+          <article class="map-card">
+            <span>01</span>
+            <h3>团队研发规范</h3>
+            <p>前端、后端、Git 分支、提交规范、质量门禁和 PR 检查，形成团队协作的默认路径。</p>
+          </article>
+          <article class="map-card">
+            <span>02</span>
+            <h3>后端架构与数据安全</h3>
+            <p>Controller / Business / DAO 分层、配置读取、Migration、SQL 参数绑定和环境分支映射。</p>
+          </article>
+          <article class="map-card">
+            <span>03</span>
+            <h3>业务系统建模</h3>
+            <p>客户、订单、分配、权限树、数据范围、跟进记录和报表指标如何从业务口径进入系统。</p>
+          </article>
+          <article class="map-card">
+            <span>04</span>
+            <h3>工程基础设施</h3>
+            <p>GitLab、Jenkins、Laradock、GitHub Actions、Confluence/Wiki、OpenVPN 与 Cloudflare 组成交付底座。</p>
+          </article>
+          <article class="map-card">
+            <span>05</span>
+            <h3>招聘画像与面试题库</h3>
+            <p>围绕业务系统目标设计后端、前端、测试、移动端和 UI 岗位能力模型。</p>
+          </article>
+          <article class="map-card">
+            <span>06</span>
+            <h3>个人知识系统</h3>
+            <p>Raw Sources、Wiki Pages、Schema、Log 和 Index 共同构成可复利的 LLM Wiki。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="topics">
+        <div class="section-head">
+          <p class="eyebrow">Topics</p>
+          <h2>长期维护的六个知识主题。</h2>
+        </div>
+
+        <div class="topic-list">
+          <article class="topic-card">
+            <div>
+              <p class="topic-label">Team System</p>
+              <h3>团队研发规范体系</h3>
+              <p>
+                规范不是文档堆，而是一套降低协作损耗的接口。它把分支、提交、前端、后端、测试和发布规则统一起来，
+                让新人能沿着路径完成第一次交付，让老成员能在评审和排障时使用共同语言。
+              </p>
+            </div>
+            <ul>
+              <li>master / beta / dev / fix 的环境映射。</li>
+              <li>feat / fix / refactor / docs 的语义化提交。</li>
+              <li>lint、type-check、test、build 的合并前门禁。</li>
+              <li>前端工程化与后端分层共同构成交付基线。</li>
+            </ul>
+          </article>
+
+          <article class="topic-card">
+            <div>
+              <p class="topic-label">Backend Architecture</p>
+              <h3>后端分层与业务承接</h3>
+              <p>
+                后端系统的可维护性，来自把协议适配、业务流程、事务边界和数据访问放在合适的位置。
+                Controller 负责输入输出，Business 承接规则和流程，DAO 收敛查询与写入。
+              </p>
+            </div>
+            <ul>
+              <li>控制器不写复杂业务判断。</li>
+              <li>事务边界靠近业务流程。</li>
+              <li>配置通过 config 读取，不在业务代码直接 env。</li>
+              <li>原生 SQL 必须参数绑定，表结构变更必须走 Migration。</li>
+            </ul>
+          </article>
+
+          <article class="topic-card">
+            <div>
+              <p class="topic-label">Business Modeling</p>
+              <h3>CRM 与客户运营系统建模</h3>
+              <p>
+                业务后台不是简单的增删改查。客户经营链路需要统一客户身份、来源渠道、分配记录、订单审核、
+                跟进转化、续保维护、权限范围和报表口径。
+              </p>
+            </div>
+            <ul>
+              <li>菜单、按钮、数据范围三层权限模型。</li>
+              <li>客户分级、顾问分级、排班过滤和 SLA 响应。</li>
+              <li>分配事件必须可回放，而不是只覆盖当前顾问 ID。</li>
+              <li>财务、导出、改派、回捞等动作需要独立授权和审计。</li>
+            </ul>
+          </article>
+
+          <article class="topic-card">
+            <div>
+              <p class="topic-label">DevOps</p>
+              <h3>工程基础设施与自动化部署</h3>
+              <p>
+                小团队也需要稳定的工程底座。代码托管、CI/CD、知识库、远程接入、域名防护和本地工具链，
+                共同决定系统能否持续、安全、可追踪地交付。
+              </p>
+            </div>
+            <ul>
+              <li>GitLab + Jenkins + Wiki / Confluence 的端口规划。</li>
+              <li>Jenkins + GitLab + Laradock 的内网自动部署。</li>
+              <li>GitHub Actions + Laradock 的生产部署闭环。</li>
+              <li>OpenVPN Split Tunnel 与 Cloudflare 源站保护。</li>
+            </ul>
+          </article>
+
+          <article class="topic-card">
+            <div>
+              <p class="topic-label">Hiring</p>
+              <h3>招聘画像与面试评估</h3>
+              <p>
+                招聘不是罗列技术栈，而是从业务系统目标反推团队配置。岗位画像关注可独立交付、工程规范意识、
+                故障排查能力、跨团队协作和 AI 工具应用。
+              </p>
+            </div>
+            <ul>
+              <li>PHP / Go 后端关注框架、中间件、并发和系统设计。</li>
+              <li>前端关注 Vue 体系、工程化、性能和跨端兼容。</li>
+              <li>测试覆盖功能、接口、自动化、性能、SQL、Linux 和 CI/CD。</li>
+              <li>面试题应考察原理、排障、取舍和工程落地。</li>
+            </ul>
+          </article>
+
+          <article class="topic-card">
+            <div>
+              <p class="topic-label">LLM Wiki</p>
+              <h3>个人知识复利系统</h3>
+              <p>
+                知识库的价值不是“存很多资料”，而是让经验可以被重新组织、查询、复用和公开表达。
+                Raw 保存事实，Wiki 负责抽象，Schema 定义规则，Log 记录演化。
+              </p>
+            </div>
+            <ul>
+              <li>Sources 保存单个来源摘要。</li>
+              <li>Entities 管理项目、平台、团队和岗位画像。</li>
+              <li>Concepts 沉淀方法、模型和排障框架。</li>
+              <li>Overview 负责跨主题综合，形成长期写作入口。</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section notes" id="notes">
+        <div class="section-head">
+          <p class="eyebrow">Notes</p>
+          <h2>可公开阅读的知识文章。</h2>
+          <p>以下文章基于知识库内容重新组织，不照搬私密原始资料，只保留可复用的方法、原则和检查清单。</p>
+        </div>
+
+        <div class="filters" aria-label="文章筛选">
+          <button class="filter is-active" type="button" data-filter="all">全部</button>
+          <button class="filter" type="button" data-filter="team">团队规范</button>
+          <button class="filter" type="button" data-filter="backend">后端架构</button>
+          <button class="filter" type="button" data-filter="business">业务系统</button>
+          <button class="filter" type="button" data-filter="devops">DevOps</button>
+          <button class="filter" type="button" data-filter="knowledge">知识管理</button>
+        </div>
+
+        <div class="search-wrap">
+          <label for="note-search">搜索文章</label>
+          <input id="note-search" type="search" placeholder="输入关键词：权限、部署、Git、CI、客户分配..." />
+        </div>
+
+        <div class="note-grid" id="note-grid">
+          <article class="note-card" data-tags="team git ci" data-slug="git-branch-flow">
+            <span>团队规范</span>
+            <h3>Git 分支环境映射：让代码流向可控</h3>
+            <p>用 master、beta、dev、fix 对应生产、测试、需求和修复，避免环境污染和合并方向混乱。</p>
+            <ul>
+              <li>从 master 创建需求或修复分支。</li>
+              <li>提测合并 beta，上线合并 master 并打 Tag。</li>
+              <li>禁止在 master / beta 直接开发。</li>
+            </ul>
+            <a class="read-link" href="articles/git-branch-flow.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="team frontend backend ci" data-slug="frontend-vs-backend-standards">
+            <span>团队规范</span>
+            <h3>前端规范 vs 后端规范：同一交付体系的两侧</h3>
+            <p>前端关注工程化、可访问性、组件边界和构建检查；后端关注分层、配置、安全和数据库变更。</p>
+            <ul>
+              <li>统一必须 / 应该 / 绝不。</li>
+              <li>统一分支和提交规则。</li>
+              <li>在 CI 中承载共同质量门禁。</li>
+            </ul>
+            <a class="read-link" href="articles/frontend-vs-backend-standards.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="backend laravel dao business" data-slug="controller-business-dao">
+            <span>后端架构</span>
+            <h3>Controller / Business / DAO：复杂业务的容器</h3>
+            <p>把输入输出、规则编排、事务边界和数据访问拆开，才能让需求变更有清晰落点。</p>
+            <ul>
+              <li>Controller 保持薄。</li>
+              <li>Business 表达业务动作。</li>
+              <li>DAO 聚焦数据域和查询安全。</li>
+            </ul>
+            <a class="read-link" href="articles/controller-business-dao.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="business crm permission" data-slug="crm-permission-tree">
+            <span>业务系统</span>
+            <h3>CRM 权限树：菜单、按钮、数据范围为什么要拆开</h3>
+            <p>页面可见、动作可执行、数据可访问是三件不同的事。混在一起会让后台权限越来越难维护。</p>
+            <ul>
+              <li>导出、改派、审核、财务字段独立授权。</li>
+              <li>本人、团队、部门、全部等数据范围与角色解耦。</li>
+              <li>权限变更需要审计记录。</li>
+            </ul>
+            <a class="read-link" href="articles/crm-permission-tree.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="business crm assignment" data-slug="customer-assignment-events">
+            <span>业务系统</span>
+            <h3>客户分配系统：从顾问 ID 到事件链</h3>
+            <p>客户分配不是写入一个归属字段，而是一条包含入池、分级、候选过滤、派发、响应和回捞的事件链。</p>
+            <ul>
+              <li>客户等级和顾问等级配置化。</li>
+              <li>排班、容量、暂停状态进入强过滤。</li>
+              <li>分配记录保留规则版本和命中原因。</li>
+            </ul>
+            <a class="read-link" href="articles/customer-assignment-events.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="devops jenkins gitlab laradock" data-slug="jenkins-gitlab-laradock">
+            <span>DevOps</span>
+            <h3>Jenkins + GitLab + Laradock 自动化部署 SOP</h3>
+            <p>内网环境下，Jenkins 拉取 GitLab 代码，rsync 同步到目标机，并在 Laradock workspace 中执行 composer install。</p>
+            <ul>
+              <li>Deploy Key 默认只读。</li>
+              <li>.env 由目标环境维护。</li>
+              <li>vendor 不通过 rsync 同步。</li>
+            </ul>
+            <a class="read-link" href="articles/jenkins-gitlab-laradock.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="devops github laradock cloud" data-slug="github-actions-laradock">
+            <span>DevOps</span>
+            <h3>GitHub Actions + Laradock：小服务器自动部署</h3>
+            <p>中小规格云服务器要先解决 Swap、SSH 信任链、Deploy Key、容器路径和生产收尾检查。</p>
+            <ul>
+              <li>生产执行 composer install，不在线上 update。</li>
+              <li>docker compose exec 使用 -T。</li>
+              <li>storage 权限和 Laravel 缓存发布后检查。</li>
+            </ul>
+            <a class="read-link" href="articles/github-actions-laradock.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="devops cloudflare dns security" data-slug="cloudflare-origin-protection">
+            <span>DevOps</span>
+            <h3>Cloudflare 源站保护：代理开启只是第一步</h3>
+            <p>真正的保护来自 DNS 接管、橙色云朵代理和源站安全组白名单共同生效。</p>
+            <ul>
+              <li>DNS 记录统一在 Cloudflare 维护。</li>
+              <li>Web 端口只允许 Cloudflare 官方 IP。</li>
+              <li>SSH / RDP 不套用 Cloudflare Web 白名单。</li>
+            </ul>
+            <a class="read-link" href="articles/cloudflare-origin-protection.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="devops vpn network" data-slug="openvpn-split-tunnel">
+            <span>DevOps</span>
+            <h3>OpenVPN Split Tunnel：只让内网流量走 VPN</h3>
+            <p>分流策略可以兼顾内网访问和公网直连体验，但必须补齐服务端路由、IP 转发和回程路由。</p>
+            <ul>
+              <li>关闭 redirect-gateway。</li>
+              <li>只 push 公司内网网段。</li>
+              <li>验收内网可达且公网出口未变化。</li>
+            </ul>
+            <a class="read-link" href="articles/openvpn-split-tunnel.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="knowledge llm wiki obsidian" data-slug="llm-wiki-system">
+            <span>知识管理</span>
+            <h3>LLM Wiki：让知识库成为可复利资产</h3>
+            <p>Raw、Sources、Entities、Concepts、Comparisons、Overview 和 Log 分工明确，LLM 负责维护结构。</p>
+            <ul>
+              <li>Raw 保持不可变。</li>
+              <li>Wiki 层负责抽象和关联。</li>
+              <li>定期 Lint 避免知识腐化。</li>
+            </ul>
+            <a class="read-link" href="articles/llm-wiki-system.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="hiring interview go php test" data-slug="interview-question-bank">
+            <span>招聘画像</span>
+            <h3>面试题库应该考察真实工程能力</h3>
+            <p>高级 PHP / Go 面试不仅问概念，还要看并发、数据库、缓存、MQ、网络排障和分布式取舍。</p>
+            <ul>
+              <li>讲清机制，而不是背 API。</li>
+              <li>能用命令定位线上问题。</li>
+              <li>能在架构设计里说明成本和边界。</li>
+            </ul>
+            <a class="read-link" href="articles/interview-question-bank.html">阅读全文</a>
+          </article>
+
+          <article class="note-card" data-tags="tool vscode efficiency" data-slug="vscode-core-shortcuts">
+            <span>效率工具</span>
+            <h3>VS Code 高频快捷键：先固化五个动作</h3>
+            <p>命令面板、快速打开、多光标、格式化、全局搜索，是把重复操作键盘化的第一组动作。</p>
+            <ul>
+              <li>先减少鼠标切换。</li>
+              <li>再按岗位补充重构、调试、终端快捷键。</li>
+              <li>多光标是重复编辑的加速器。</li>
+            </ul>
+            <a class="read-link" href="articles/vscode-core-shortcuts.html">阅读全文</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section systems" id="systems">
+        <div class="section-head">
+          <p class="eyebrow">Method</p>
+          <h2>我如何把资料变成公开知识。</h2>
+        </div>
+
+        <div class="method-layout">
+          <article class="method-card">
+            <span>Step 01</span>
+            <h3>Raw：保留事实来源</h3>
+            <p>原始资料只做归档，不为了好看而改写。它保存会议、规范、部署记录、问题现场和项目资料。</p>
+          </article>
+          <article class="method-card">
+            <span>Step 02</span>
+            <h3>Source：压缩单个来源</h3>
+            <p>把一份资料提炼成标题、主题范围、核心要点、风险边界和关联页面，方便之后被检索。</p>
+          </article>
+          <article class="method-card">
+            <span>Step 03</span>
+            <h3>Entity：沉淀对象</h3>
+            <p>团队规范、工程平台、业务系统、招聘画像这类长期对象，会进入实体页并持续更新状态。</p>
+          </article>
+          <article class="method-card">
+            <span>Step 04</span>
+            <h3>Concept：抽象方法</h3>
+            <p>分支映射、质量门禁、权限树、源站保护、Split Tunnel、最终一致性等进入概念层。</p>
+          </article>
+          <article class="method-card">
+            <span>Step 05</span>
+            <h3>Overview：形成主题综述</h3>
+            <p>当多个来源、实体和概念形成网络，就可以生成面向公开写作的主题综述。</p>
+          </article>
+          <article class="method-card">
+            <span>Step 06</span>
+            <h3>Public：公开化表达</h3>
+            <p>公开页面只保留方法、原则和检查清单，不暴露私密路径、账号、内部数据表和可识别业务细节。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section references">
+        <div class="section-head">
+          <p class="eyebrow">Reading Paths</p>
+          <h2>建议从这些路线开始读。</h2>
+        </div>
+
+        <div class="path-grid">
+          <article>
+            <h3>想提升团队交付</h3>
+            <p>先读 Git 分支、语义化提交、前后端规范对比和质量门禁。目标是把团队规则从口头经验变成可执行流程。</p>
+          </article>
+          <article>
+            <h3>想设计业务后台</h3>
+            <p>先读 CRM 权限树、客户分配事件链、订单和报表口径。目标是把业务复杂度拆成对象、流程、权限和指标。</p>
+          </article>
+          <article>
+            <h3>想搭工程底座</h3>
+            <p>先读 Jenkins、GitLab、Laradock、OpenVPN、Cloudflare。目标是让代码、发布、知识库和远程接入形成闭环。</p>
+          </article>
+          <article>
+            <h3>想建设个人知识库</h3>
+            <p>先读 LLM Wiki 方法，把资料从 raw 转成 sources、entities、concepts、overview，再定期 lint。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section about" id="about">
+        <div class="about-panel">
+          <div>
+            <p class="eyebrow">About</p>
+            <h2>关于这个站点。</h2>
+          </div>
+          <p>
+            这个网站由本地个人知识库生成，定位是长期维护的工程知识分享空间。它参考了轻量个人知识站的结构：
+            第一屏说明主张，接着展示知识地图、主题、文章、方法和阅读路线。内容上尽量来自真实知识库，
+            同时在公开化时做了抽象、脱敏和重写。
+          </p>
+          <p>
+            站点后续可以继续扩展为多页文章系统、RSS、全文搜索、标签页、部署到 Cloudflare Pages，
+            或接入脚本从 Obsidian 自动生成内容。当前版本是一个完整的静态起点。
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="assets/articles.js"></script>
+    <script src="assets/app.js" defer></script>
+  </body>
+</html>

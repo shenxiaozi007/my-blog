@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>前端规范 vs 后端规范：同一交付体系的两侧 | HXC Knowledge Lab</title>
+    <meta name="description" content="前端关注工程化、可访问性、组件边界和构建检查；后端关注分层、配置、安全和数据库变更。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/frontend-vs-backend-standards.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="前端规范 vs 后端规范：同一交付体系的两侧 | HXC Knowledge Lab" />
+    <meta property="og:description" content="前端关注工程化、可访问性、组件边界和构建检查；后端关注分层、配置、安全和数据库变更。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/frontend-vs-backend-standards.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="前端规范 vs 后端规范：同一交付体系的两侧 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="前端关注工程化、可访问性、组件边界和构建检查；后端关注分层、配置、安全和数据库变更。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "前端规范 vs 后端规范：同一交付体系的两侧",
+  "description": "前端关注工程化、可访问性、组件边界和构建检查；后端关注分层、配置、安全和数据库变更。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/frontend-vs-backend-standards.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "team, frontend, backend, ci"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">团队规范</p>
+        <h1>前端规范 vs 后端规范：同一交付体系的两侧</h1>
+        <p class="article-description">前端关注工程化、可访问性、组件边界和构建检查；后端关注分层、配置、安全和数据库变更。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>16 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>team</span>
+          <span>frontend</span>
+          <span>backend</span>
+          <span>ci</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《前端规范》《后端规范》《比较_前端规范_vs_后端规范》《概念_质量门禁与CI流程》和团队研发规范实体页扩展。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-规范不是两本文档">规范不是两本文档</a><a href="#section-2-前端侧的检查重点">前端侧的检查重点</a><a href="#section-3-后端侧的检查重点">后端侧的检查重点</a><a href="#section-4-共同语言-必须-应该-绝不">共同语言：必须、应该、绝不</a><a href="#section-5-前端规范的核心不是-ui-好看">前端规范的核心不是 UI 好看</a><a href="#section-6-后端规范的核心是数据和流程可信">后端规范的核心是数据和流程可信</a><a href="#section-7-把规范落到-ci-而不是贴在墙上">把规范落到 CI，而不是贴在墙上</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-规范不是两本文档" class="article-section">
+            <h2>规范不是两本文档</h2>
+            <p>前端规范和后端规范常被分开写，但它们解决的是同一个问题：多人协作下如何稳定交付。前端更靠近用户体验、状态管理、组件复用和构建产物；后端更靠近业务规则、数据一致性、权限、安全和可观测性。</p>
+            <p>好的团队规范应该有统一语气和统一门槛。比如“必须、应该、禁止”需要在两端含义一致；分支、提交、评审、测试也应该使用同一套流程承接。</p>
+            <ul>
+              <li>前端负责页面结构、交互状态、组件边界和构建质量。</li>
+              <li>后端负责接口契约、业务流程、事务边界和数据安全。</li>
+              <li>共同部分包括 Git、提交、评审、CI、发布和事故复盘。</li>
+              <li>规范要能被检查工具承载，而不是只靠口头提醒。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-前端侧的检查重点" class="article-section">
+            <h2>前端侧的检查重点</h2>
+            <p>前端规范要避免只写目录结构。真正影响交付质量的是组件职责是否清楚、接口错误态是否完整、移动端是否可用、可访问性是否基本达标，以及构建产物是否稳定。</p>
+            <p>对于业务后台，前端不应该做得像营销页。它需要密度、扫描效率、表单容错、列表筛选、批量操作和权限态处理。组件抽象也应该围绕真实业务重复，而不是为了抽象而抽象。</p>
+            <ul>
+              <li>路由、状态、请求、权限、表单和表格要有固定模式。</li>
+              <li>按钮、输入框、弹窗、空状态和错误态要统一。</li>
+              <li>移动端导航不能直接消失，至少要有菜单入口。</li>
+              <li>构建前跑 lint、type-check 和 build。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-后端侧的检查重点" class="article-section">
+            <h2>后端侧的检查重点</h2>
+            <p>后端规范的核心是把变化放到合适位置。Controller 不承载复杂流程，Business 表达业务动作，DAO 收敛数据访问。配置读取、Migration、SQL 参数绑定、异常处理和日志埋点，是后端规范里最容易影响线上稳定性的部分。</p>
+            <p>当团队能用同一套质量门禁检查前后端时，规范才真正进入工程系统。否则它只是文档。</p>
+            <ul>
+              <li>Controller 只处理协议、校验和响应。</li>
+              <li>Business 负责规则、流程、事务和跨 DAO 编排。</li>
+              <li>DAO 负责查询、写入和参数绑定。</li>
+              <li>数据库结构变化必须走 Migration 并能回滚。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-共同语言-必须-应该-绝不" class="article-section">
+            <h2>共同语言：必须、应该、绝不</h2>
+            <p>知识库里的前后端规范都使用规则强度来表达要求，这一点非常重要。团队协作最怕同一句话在不同人那里强度不同。“必须”代表违反就不能合并，“应该”代表默认遵守但可说明例外，“绝不”代表高风险红线。</p>
+            <p>这种表达方式让规范从建议变成契约。它也方便代码评审时减少情绪：评审不是某个人挑剔，而是对照共同约定。</p>
+            <ul>
+              <li>必须：安全、数据一致性、构建通过、接口契约。</li>
+              <li>应该：命名、组件边界、目录组织、错误态完整。</li>
+              <li>绝不：拼接 SQL、提交密钥、跳过权限、直接改生产配置。</li>
+              <li>例外情况必须在 PR 中说明原因和后续处理。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-前端规范的核心不是-ui-好看" class="article-section">
+            <h2>前端规范的核心不是 UI 好看</h2>
+            <p>前端规范在知识库里覆盖命名、目录、HTML/CSS/TS、组件职责、API 层收敛、可访问性、兼容性和性能。对于业务系统，前端的核心目标不是把页面做得热闹，而是让重复操作稳定、清晰、少出错。</p>
+            <p>这意味着表格筛选、批量操作、权限态、空状态、错误提示、加载态和移动端导航都要被当成一等功能。</p>
+            <ul>
+              <li>API 请求集中封装，避免组件里到处拼接口。</li>
+              <li>表单字段、校验、提交态和错误态要统一。</li>
+              <li>权限按钮隐藏之外，也要考虑禁用态和解释文案。</li>
+              <li>移动端不能把导航直接隐藏到不可访问。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-后端规范的核心是数据和流程可信" class="article-section">
+            <h2>后端规范的核心是数据和流程可信</h2>
+            <p>后端规范更关注 Controller-Business-DAO 分层、配置读取、SQL 注入防护、Migration 管理和环境映射。后端一旦出错，影响的不只是页面体验，而是数据、权限和资金口径。</p>
+            <p>所以后端规范往往更强调边界：业务逻辑不要塞进 Controller，配置不要直接 env，数据库变更不要手改，SQL 不要拼接。</p>
+            <ul>
+              <li>Controller 面向协议，不承载长流程。</li>
+              <li>Business 面向业务动作，承接事务和规则。</li>
+              <li>DAO 面向数据域，统一查询与写入。</li>
+              <li>Migration 让表结构变化可追溯、可评审、可回滚。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-把规范落到-ci-而不是贴在墙上" class="article-section">
+            <h2>把规范落到 CI，而不是贴在墙上</h2>
+            <p>如果规范不能被工具检查，它最终会退化成口号。前端可以用 ESLint、TypeScript、测试和构建兜底；后端可以用语法检查、测试、静态分析、迁移检查和接口冒烟兜底。共同部分则由 Git 分支、提交规范和 PR 模板承接。</p>
+            <p>规范的成熟标志不是文档越来越长，而是人工提醒越来越少。</p>
+            <ul>
+              <li>PR 模板检查需求、测试、影响范围、回滚方案。</li>
+              <li>CI 失败自动阻止合并。</li>
+              <li>发布记录绑定分支、提交和环境。</li>
+              <li>事故复盘反向更新规范和门禁。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="git-branch-flow.html">
+            <span>团队规范</span>
+            <strong>Git 分支环境映射：让代码流向可控</strong>
+            <em>14 分钟阅读</em>
+          </a>
+          <a class="related-card" href="controller-business-dao.html">
+            <span>后端架构</span>
+            <strong>Controller / Business / DAO：复杂业务的容器</strong>
+            <em>17 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

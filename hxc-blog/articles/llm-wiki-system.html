@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LLM Wiki：让知识库成为可复利资产 | HXC Knowledge Lab</title>
+    <meta name="description" content="Raw、Sources、Entities、Concepts、Comparisons、Overview 和 Log 分工明确，LLM 负责维护结构。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/llm-wiki-system.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="LLM Wiki：让知识库成为可复利资产 | HXC Knowledge Lab" />
+    <meta property="og:description" content="Raw、Sources、Entities、Concepts、Comparisons、Overview 和 Log 分工明确，LLM 负责维护结构。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/llm-wiki-system.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="LLM Wiki：让知识库成为可复利资产 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="Raw、Sources、Entities、Concepts、Comparisons、Overview 和 Log 分工明确，LLM 负责维护结构。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "LLM Wiki：让知识库成为可复利资产",
+  "description": "Raw、Sources、Entities、Concepts、Comparisons、Overview 和 Log 分工明确，LLM 负责维护结构。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/llm-wiki-system.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "knowledge, llm, wiki, obsidian"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">知识管理</p>
+        <h1>LLM Wiki：让知识库成为可复利资产</h1>
+        <p class="article-description">Raw、Sources、Entities、Concepts、Comparisons、Overview 和 Log 分工明确，LLM 负责维护结构。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>18 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>knowledge</span>
+          <span>llm</span>
+          <span>wiki</span>
+          <span>obsidian</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于知识库 README、TheSchema、wiki/index、log 和 LLM Wiki 目录结构整理，并参考 Karpathy LLM Wiki 模式做公开化表达。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-从收藏夹到知识系统">从收藏夹到知识系统</a><a href="#section-2-llm-适合做什么">LLM 适合做什么</a><a href="#section-3-维护节奏">维护节奏</a><a href="#section-4-三层架构-raw-wiki-schema">三层架构：Raw、Wiki、Schema</a><a href="#section-5-ingest-把资料变成知识页">Ingest：把资料变成知识页</a><a href="#section-6-query-让知识库能回答问题">Query：让知识库能回答问题</a><a href="#section-7-lint-防止知识腐化">Lint：防止知识腐化</a><a href="#section-8-从-obsidian-到网站">从 Obsidian 到网站</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-从收藏夹到知识系统" class="article-section">
+            <h2>从收藏夹到知识系统</h2>
+            <p>个人知识库最大的问题不是资料不够，而是资料无法复用。会议记录、项目文档、部署日志、面试题、规范草案都堆在一起时，搜索会越来越难，写作也很难从里面自然长出来。</p>
+            <p>LLM Wiki 的思路是把原始资料和知识抽象分层。Raw 保存事实，不随便改写；Sources 压缩单个来源；Entities 管理长期对象；Concepts 沉淀方法；Comparisons 做横向比较；Overview 形成主题综述；Log 记录演化。</p>
+            <ul>
+              <li>Raw 层保留原始事实。</li>
+              <li>Wiki 层负责提炼、关联和公开化表达。</li>
+              <li>Schema 定义页面字段和更新规则。</li>
+              <li>Index 提供导航，Log 提供演化记录。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-llm-适合做什么" class="article-section">
+            <h2>LLM 适合做什么</h2>
+            <p>LLM 不是替你决定知识价值，而是帮你做结构化维护。它擅长摘要、分类、抽取实体、发现重复、生成索引、补充交叉链接和把内部资料改写成公开表达。</p>
+            <p>但原始事实必须可追溯。任何公开内容都应该知道来自哪些资料，哪些是经验总结，哪些是后续扩展。</p>
+            <ul>
+              <li>用 LLM 生成 Source 摘要。</li>
+              <li>用 LLM 发现 Entity 和 Concept。</li>
+              <li>用 LLM 定期检查孤立页面和重复主题。</li>
+              <li>公开化时做脱敏和重写。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-维护节奏" class="article-section">
+            <h2>维护节奏</h2>
+            <p>知识系统需要节奏。每次新增资料后，不一定马上写长文，但要至少进入 Raw 和 Source。每隔一段时间把 Source 汇总到 Entity 或 Concept，再把多个概念组织成 Overview。</p>
+            <p>公开网站就是这个流程的出口。它不需要一次性完美，但需要持续从知识库里长出内容。</p>
+            <ul>
+              <li>每日或每周归档 Raw。</li>
+              <li>定期生成 Sources。</li>
+              <li>每月整理 Overview。</li>
+              <li>发布前做隐私和事实检查。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-三层架构-raw-wiki-schema" class="article-section">
+            <h2>三层架构：Raw、Wiki、Schema</h2>
+            <p>你的知识库 README 把系统分成原始资料层、知识层和配置层。Raw 保存不可变事实，Wiki 保存结构化知识网络，Schema 定义系统规则和工作流。这个分层很适合个人知识复利，因为它避免了两个常见问题：原始资料被过度改写，或者总结内容没有来源。</p>
+            <p>公开网站应该主要来自 Wiki 层，而不是直接暴露 Raw。Raw 里可能有内部路径、业务细节、账号线索和未脱敏资料。</p>
+            <ul>
+              <li>raw/：只添加，不随意改写。</li>
+              <li>wiki/sources/：单个来源摘要。</li>
+              <li>wiki/entities/：项目、系统、团队、岗位等长期对象。</li>
+              <li>TheSchema.md：约束 LLM 如何维护知识。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-ingest-把资料变成知识页" class="article-section">
+            <h2>Ingest：把资料变成知识页</h2>
+            <p>Ingest 是知识库增长的入口。新增一份规范、部署记录、面试材料或业务文档后，LLM 先阅读 Raw，再创建 Source 摘要，抽取相关 Entity 和 Concept，并更新交叉引用。</p>
+            <p>这个流程的重点是保留来源。未来你写公开文章时，可以知道某个结论来自哪些资料，而不是凭记忆复述。</p>
+            <ul>
+              <li>先创建 Source，记录标题、类型、范围和核心要点。</li>
+              <li>再更新 Entity，例如团队研发规范体系或工程基础设施平台。</li>
+              <li>抽取 Concept，例如分支环境映射、质量门禁、权限树。</li>
+              <li>最后写入 log，记录知识库变化。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-query-让知识库能回答问题" class="article-section">
+            <h2>Query：让知识库能回答问题</h2>
+            <p>Query 不是简单全文搜索，而是让 LLM 先定位相关页面，再综合回答。比如问“前端规范和后端规范有什么不同”，它应该读取 comparison、source 和 concept，而不是只返回包含关键词的文件。</p>
+            <p>当一次 Query 产生了有价值的答案，可以把它写回 Wiki，形成新的概念页或比较页。这样知识库会越问越厚。</p>
+            <ul>
+              <li>问题先映射到实体、概念或来源。</li>
+              <li>回答要带来源线索。</li>
+              <li>有价值的综合答案写回 Wiki。</li>
+              <li>避免让 LLM 每次从 Raw 重新推导。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-lint-防止知识腐化" class="article-section">
+            <h2>Lint：防止知识腐化</h2>
+            <p>知识库长期维护后会出现重复页面、过期结论、孤立条目和交叉引用断裂。README 中的 Lint 操作就是为了解决这个问题。LLM 很适合做这些人类不愿意做的记账工作。</p>
+            <p>对于公开网站，Lint 还可以扩展成发布前检查：是否暴露敏感路径，是否引用未脱敏资料，是否有过时状态，是否缺少 canonical 和描述。</p>
+            <ul>
+              <li>发现重复概念并建议合并。</li>
+              <li>发现孤立页面并补充链接。</li>
+              <li>检查过期状态和矛盾描述。</li>
+              <li>发布前做隐私、SEO 和来源检查。</li>
+            </ul>
+          </section>
+
+          <section id="section-8-从-obsidian-到网站" class="article-section">
+            <h2>从 Obsidian 到网站</h2>
+            <p>当前 hxc-blog 是手工提炼版，但它可以继续演进成半自动发布系统。下一步可以让每篇文章记录 sourceNote、slug、tags、sections，然后从 wiki 中生成 JSON，再由静态页面渲染。</p>
+            <p>这样你在 Obsidian 里继续维护知识，网站只负责公开表达。知识库是内场，网站是前台。</p>
+            <ul>
+              <li>Obsidian 维护事实和结构。</li>
+              <li>生成脚本负责脱敏、摘要和 JSON 输出。</li>
+              <li>网站负责阅读体验、搜索和导航。</li>
+              <li>Cloudflare Pages 负责部署和缓存。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid"></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

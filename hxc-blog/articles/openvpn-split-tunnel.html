@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenVPN Split Tunnel：只让内网流量走 VPN | HXC Knowledge Lab</title>
+    <meta name="description" content="分流策略可以兼顾内网访问和公网直连体验，但必须补齐服务端路由、IP 转发和回程路由。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/openvpn-split-tunnel.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="OpenVPN Split Tunnel：只让内网流量走 VPN | HXC Knowledge Lab" />
+    <meta property="og:description" content="分流策略可以兼顾内网访问和公网直连体验，但必须补齐服务端路由、IP 转发和回程路由。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/openvpn-split-tunnel.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="OpenVPN Split Tunnel：只让内网流量走 VPN | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="分流策略可以兼顾内网访问和公网直连体验，但必须补齐服务端路由、IP 转发和回程路由。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "OpenVPN Split Tunnel：只让内网流量走 VPN",
+  "description": "分流策略可以兼顾内网访问和公网直连体验，但必须补齐服务端路由、IP 转发和回程路由。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/openvpn-split-tunnel.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "devops, vpn, network"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">DevOps</p>
+        <h1>OpenVPN Split Tunnel：只让内网流量走 VPN</h1>
+        <p class="article-description">分流策略可以兼顾内网访问和公网直连体验，但必须补齐服务端路由、IP 转发和回程路由。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>13 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>devops</span>
+          <span>vpn</span>
+          <span>network</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《来源_OpenVPN部署与内网分流》《概念_内网分流_Split_Tunnel》和工程基础设施平台实体页整理。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-为什么要分流">为什么要分流</a><a href="#section-2-服务端配置要点">服务端配置要点</a><a href="#section-3-验收方式">验收方式</a><a href="#section-4-分流的关键是路由-而不是客户端按钮">分流的关键是路由，而不是客户端按钮</a><a href="#section-5-服务端必须能转发">服务端必须能转发</a><a href="#section-6-回程路由经常被忽略">回程路由经常被忽略</a><a href="#section-7-新成员接入检查">新成员接入检查</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-为什么要分流" class="article-section">
+            <h2>为什么要分流</h2>
+            <p>全局 VPN 会让所有流量都经过公司网络，简单但影响体验，也可能让公网访问变慢。Split Tunnel 的目标是只让公司内网网段走 VPN，其他公网流量仍然走本地网络。</p>
+            <p>这种模式适合远程访问内网 GitLab、Jenkins、Wiki、测试服务等场景。</p>
+            <ul>
+              <li>保留公网直连体验。</li>
+              <li>只推送公司内网网段路由。</li>
+              <li>减少 VPN 服务器带宽压力。</li>
+              <li>降低排障复杂度。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-服务端配置要点" class="article-section">
+            <h2>服务端配置要点</h2>
+            <p>OpenVPN 服务端不要推送 redirect-gateway，而是 push 指定内网路由。服务器本身需要开启 IP 转发，防火墙允许转发，内网目标机器要知道如何把回包返回 VPN 客户端网段。</p>
+            <p>很多分流失败不是客户端问题，而是回程路由缺失。客户端能把包发进去，但内网机器不知道怎么回。</p>
+            <ul>
+              <li>关闭 redirect-gateway。</li>
+              <li>push route 只推送内网 CIDR。</li>
+              <li>开启 net.ipv4.ip_forward。</li>
+              <li>补齐 NAT 或内网回程路由。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-验收方式" class="article-section">
+            <h2>验收方式</h2>
+            <p>验收要同时看内网和公网。连接 VPN 后，内网服务应该可访问；访问公网查出口 IP，应该仍然是本地网络出口。再用 route 或 netstat 检查目标网段路由是否进入 tun 设备。</p>
+            <p>把这些检查写进 SOP，新成员接入时会省很多沟通。</p>
+            <ul>
+              <li>ping 或 curl 内网服务。</li>
+              <li>检查公网出口 IP 未变化。</li>
+              <li>查看路由表是否包含内网网段。</li>
+              <li>断开 VPN 后内网不可达。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-分流的关键是路由-而不是客户端按钮" class="article-section">
+            <h2>分流的关键是路由，而不是客户端按钮</h2>
+            <p>OpenVPN Split Tunnel 的核心不是客户端界面上选不选全局代理，而是服务端到底 push 了哪些 route。知识库里明确建议不要推送 redirect-gateway，而是只推送公司内网 CIDR。</p>
+            <p>这样连接 VPN 后，访问内网 GitLab、Jenkins、Wiki 会走 tun 设备，访问普通公网仍然走本地出口。</p>
+            <ul>
+              <li>不 push redirect-gateway。</li>
+              <li>只 push 需要访问的内网网段。</li>
+              <li>客户端路由表能看到内网 CIDR 指向 tun。</li>
+              <li>公网出口 IP 不应因为连接 VPN 改变。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-服务端必须能转发" class="article-section">
+            <h2>服务端必须能转发</h2>
+            <p>客户端把包发到 VPN 服务端后，服务端还要能把包转发到内网目标机器。这需要开启 net.ipv4.ip_forward，并配置防火墙允许转发。</p>
+            <p>如果这一步缺失，客户端看起来连接成功，但访问内网服务会超时。</p>
+            <ul>
+              <li>开启 net.ipv4.ip_forward=1。</li>
+              <li>防火墙放行 OpenVPN 端口，默认 UDP 1194。</li>
+              <li>允许 tun 网段到内网网段转发。</li>
+              <li>必要时配置 NAT。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-回程路由经常被忽略" class="article-section">
+            <h2>回程路由经常被忽略</h2>
+            <p>很多 Split Tunnel 失败是回程路由问题。内网目标机器收到来自 VPN 客户端网段的请求后，不知道如何回包。解决方式有两类：在内网网关添加回程路由，或在 VPN 服务端做 NAT。</p>
+            <p>前者更清晰，后者更容易快速落地。选择哪种取决于你是否能控制内网网关。</p>
+            <ul>
+              <li>能改内网网关时，添加 VPN 客户端网段回程路由。</li>
+              <li>不能改网关时，在 VPN 服务端做 SNAT/MASQUERADE。</li>
+              <li>用 tcpdump 分别看请求是否到达、回包是否返回。</li>
+              <li>把路由拓扑写进部署文档。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-新成员接入检查" class="article-section">
+            <h2>新成员接入检查</h2>
+            <p>OpenVPN 最好有一页新成员接入检查表。证书、配置文件、客户端版本、DNS、路由和内网服务列表都写清楚，可以减少大量重复沟通。</p>
+            <p>尤其是只让内网流量走 VPN 的场景，用户很容易误以为所有流量都被代理。文档里要明确这个设计目标。</p>
+            <ul>
+              <li>连接后能访问内网 GitLab/Jenkins/Wiki。</li>
+              <li>公网出口 IP 保持本地网络。</li>
+              <li>断开 VPN 后内网不可访问。</li>
+              <li>证书丢失或离职时能及时吊销。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="jenkins-gitlab-laradock.html">
+            <span>DevOps</span>
+            <strong>Jenkins + GitLab + Laradock 自动化部署 SOP</strong>
+            <em>17 分钟阅读</em>
+          </a>
+          <a class="related-card" href="github-actions-laradock.html">
+            <span>DevOps</span>
+            <strong>GitHub Actions + Laradock：小服务器自动部署</strong>
+            <em>15 分钟阅读</em>
+          </a>
+          <a class="related-card" href="cloudflare-origin-protection.html">
+            <span>DevOps</span>
+            <strong>Cloudflare 源站保护：代理开启只是第一步</strong>
+            <em>13 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

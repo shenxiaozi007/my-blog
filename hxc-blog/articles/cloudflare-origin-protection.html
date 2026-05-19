@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cloudflare 源站保护：代理开启只是第一步 | HXC Knowledge Lab</title>
+    <meta name="description" content="真正的保护来自 DNS 接管、橙色云朵代理和源站安全组白名单共同生效。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/cloudflare-origin-protection.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="Cloudflare 源站保护：代理开启只是第一步 | HXC Knowledge Lab" />
+    <meta property="og:description" content="真正的保护来自 DNS 接管、橙色云朵代理和源站安全组白名单共同生效。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/cloudflare-origin-protection.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Cloudflare 源站保护：代理开启只是第一步 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="真正的保护来自 DNS 接管、橙色云朵代理和源站安全组白名单共同生效。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Cloudflare 源站保护：代理开启只是第一步",
+  "description": "真正的保护来自 DNS 接管、橙色云朵代理和源站安全组白名单共同生效。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/cloudflare-origin-protection.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "devops, cloudflare, dns, security"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">DevOps</p>
+        <h1>Cloudflare 源站保护：代理开启只是第一步</h1>
+        <p class="article-description">真正的保护来自 DNS 接管、橙色云朵代理和源站安全组白名单共同生效。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>13 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>devops</span>
+          <span>cloudflare</span>
+          <span>dns</span>
+          <span>security</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《概念_Cloudflare源站保护》《来源_腾讯云域名接入Cloudflare与Pages部署》和 Cloudflare 部署剪藏笔记扩展。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-橙色云朵不等于完整防护">橙色云朵不等于完整防护</a><a href="#section-2-源站安全组怎么配">源站安全组怎么配</a><a href="#section-3-验收清单">验收清单</a><a href="#section-4-dns-接管是第一步">DNS 接管是第一步</a><a href="#section-5-源站-ip-不能裸奔">源站 IP 不能裸奔</a><a href="#section-6-真实客户端-ip">真实客户端 IP</a><a href="#section-7-pages-部署的延伸">Pages 部署的延伸</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-橙色云朵不等于完整防护" class="article-section">
+            <h2>橙色云朵不等于完整防护</h2>
+            <p>Cloudflare 代理能隐藏一部分源站信息、提供缓存和基础防护，但如果源站 IP 仍然允许全网访问，攻击者绕过 Cloudflare 直连源站，保护就会失效。</p>
+            <p>完整链路应该是 DNS 接管、Web 记录开启代理、源站安全组只允许 Cloudflare 官方 IP 访问 80/443，再配合应用层 HTTPS 和日志观察。</p>
+            <ul>
+              <li>域名 NS 切到 Cloudflare。</li>
+              <li>A / CNAME Web 记录开启代理。</li>
+              <li>源站 80/443 白名单限制为 Cloudflare IP。</li>
+              <li>SSH、RDP、数据库端口不要套用 Web 代理思路。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-源站安全组怎么配" class="article-section">
+            <h2>源站安全组怎么配</h2>
+            <p>源站安全组是关键一环。Web 端口只允许 Cloudflare IP 段，管理端口只允许自己的固定出口或 VPN 网段。数据库和 Redis 不应该暴露公网。</p>
+            <p>Cloudflare 官方 IP 段会更新，生产环境需要定期维护白名单，或者用自动化脚本同步。</p>
+            <ul>
+              <li>80/443：Cloudflare IP 白名单。</li>
+              <li>22：个人固定 IP 或 VPN。</li>
+              <li>3306/6379：内网访问。</li>
+              <li>记录变更前后都要测试访问路径。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-验收清单" class="article-section">
+            <h2>验收清单</h2>
+            <p>验收时不要只看浏览器能打开。还要测试源站 IP 是否无法直接访问，DNS 是否都在 Cloudflare 管理，证书模式是否正确，日志里真实客户端 IP 是否能通过请求头恢复。</p>
+            <p>这类基础设施动作一旦做对，后续站点增加业务功能时会安心很多。</p>
+            <ul>
+              <li>域名可访问，源站 IP 直连不可访问。</li>
+              <li>Nginx 能正确记录 CF-Connecting-IP。</li>
+              <li>证书模式符合源站证书配置。</li>
+              <li>管理端口仍然有单独访问方式。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-dns-接管是第一步" class="article-section">
+            <h2>DNS 接管是第一步</h2>
+            <p>Cloudflare 的防护前提是域名 DNS 由 Cloudflare 管理。仅仅把某条记录指向 Cloudflare 相关地址不够，域名的 NS 需要切到 Cloudflare 提供的 Nameserver。</p>
+            <p>接管后，Web 访问记录开启代理，也就是常说的橙色云朵。此时用户访问域名会先到 Cloudflare，再由 Cloudflare 回源。</p>
+            <ul>
+              <li>在域名注册商处修改 Nameserver。</li>
+              <li>Cloudflare 内维护 A / CNAME 等 DNS 记录。</li>
+              <li>Web 站点记录开启代理。</li>
+              <li>非 Web 协议不要误开代理。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-源站-ip-不能裸奔" class="article-section">
+            <h2>源站 IP 不能裸奔</h2>
+            <p>如果源站安全组仍然允许全网访问 80/443，攻击者只要知道源站 IP，就可以绕过 Cloudflare。真正的源站保护，是让源站 Web 端口只接受 Cloudflare 官方 IP 段。</p>
+            <p>这一步在云服务器安全组、防火墙或 Nginx 层都可以做，但云安全组通常更靠前。</p>
+            <ul>
+              <li>80/443 只允许 Cloudflare IP 段。</li>
+              <li>22 只允许个人固定 IP 或 VPN。</li>
+              <li>数据库和 Redis 只允许内网。</li>
+              <li>Cloudflare IP 段需要定期同步更新。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-真实客户端-ip" class="article-section">
+            <h2>真实客户端 IP</h2>
+            <p>开启代理后，源站看到的连接 IP 可能是 Cloudflare 节点，而不是真实用户。应用日志、限流、审计如果依赖客户端 IP，就需要正确读取 CF-Connecting-IP 或 X-Forwarded-For，并在 Nginx 中配置可信代理。</p>
+            <p>否则你会发现日志里大量请求都来自 Cloudflare，排障和风控都会受影响。</p>
+            <ul>
+              <li>Nginx 配置 real_ip_header CF-Connecting-IP。</li>
+              <li>set_real_ip_from 只信任 Cloudflare IP 段。</li>
+              <li>应用层不要盲目信任任意 X-Forwarded-For。</li>
+              <li>检查日志是否恢复真实访问 IP。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-pages-部署的延伸" class="article-section">
+            <h2>Pages 部署的延伸</h2>
+            <p>对于个人知识站这类静态站点，Cloudflare Pages 是很合适的出口。代码推到 GitHub 后，Pages 可以自动构建和发布，并绑定自定义域名。当前这个 hxc-blog 就可以作为静态目录直接部署。</p>
+            <p>如果后续要加入搜索、RSS、文章生成脚本，也可以先保持静态，再逐步加入构建流程。</p>
+            <ul>
+              <li>GitHub 仓库连接 Cloudflare Pages。</li>
+              <li>构建命令为空或按后续脚本配置。</li>
+              <li>输出目录指向 hxc-blog 或站点根目录。</li>
+              <li>绑定 my.hxcbox.cn 并开启 HTTPS。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="jenkins-gitlab-laradock.html">
+            <span>DevOps</span>
+            <strong>Jenkins + GitLab + Laradock 自动化部署 SOP</strong>
+            <em>17 分钟阅读</em>
+          </a>
+          <a class="related-card" href="github-actions-laradock.html">
+            <span>DevOps</span>
+            <strong>GitHub Actions + Laradock：小服务器自动部署</strong>
+            <em>15 分钟阅读</em>
+          </a>
+          <a class="related-card" href="openvpn-split-tunnel.html">
+            <span>DevOps</span>
+            <strong>OpenVPN Split Tunnel：只让内网流量走 VPN</strong>
+            <em>13 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

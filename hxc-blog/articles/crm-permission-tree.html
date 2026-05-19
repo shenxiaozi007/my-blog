@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRM 权限树：菜单、按钮、数据范围为什么要拆开 | HXC Knowledge Lab</title>
+    <meta name="description" content="页面可见、动作可执行、数据可访问是三件不同的事。混在一起会让后台权限越来越难维护。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/crm-permission-tree.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="CRM 权限树：菜单、按钮、数据范围为什么要拆开 | HXC Knowledge Lab" />
+    <meta property="og:description" content="页面可见、动作可执行、数据可访问是三件不同的事。混在一起会让后台权限越来越难维护。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/crm-permission-tree.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="CRM 权限树：菜单、按钮、数据范围为什么要拆开 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="页面可见、动作可执行、数据可访问是三件不同的事。混在一起会让后台权限越来越难维护。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "CRM 权限树：菜单、按钮、数据范围为什么要拆开",
+  "description": "页面可见、动作可执行、数据可访问是三件不同的事。混在一起会让后台权限越来越难维护。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/crm-permission-tree.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "business, crm, permission"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">业务系统</p>
+        <h1>CRM 权限树：菜单、按钮、数据范围为什么要拆开</h1>
+        <p class="article-description">页面可见、动作可执行、数据可访问是三件不同的事。混在一起会让后台权限越来越难维护。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>18 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>business</span>
+          <span>crm</span>
+          <span>permission</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《概念_CRM权限树与数据范围》《来源_云实CRM权限树整理》《来源_云实CRM数据库设计_v2》和 CRM 业务系统实体页脱敏整理。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-权限不是一个-role_id">权限不是一个 role_id</a><a href="#section-2-权限树如何建模">权限树如何建模</a><a href="#section-3-审计和排障">审计和排障</a><a href="#section-4-知识库中的三层权限模型">知识库中的三层权限模型</a><a href="#section-5-表结构如何支撑权限">表结构如何支撑权限</a><a href="#section-6-敏感权限必须拆出来">敏感权限必须拆出来</a><a href="#section-7-权限排障-回答为什么">权限排障：回答为什么</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-权限不是一个-role_id" class="article-section">
+            <h2>权限不是一个 role_id</h2>
+            <p>业务后台的权限经常从一个 role_id 开始，最后变成一堆 if 判断。原因是系统把三件事混在了一起：用户能不能看到某个菜单，能不能点击某个按钮，能不能访问某个范围的数据。</p>
+            <p>这三类权限的变化频率不同，风险也不同。菜单权限影响入口，按钮权限影响动作，数据范围影响信息边界。越是涉及客户、订单、财务、导出和改派，越不能简单混用。</p>
+            <ul>
+              <li>菜单权限决定页面入口。</li>
+              <li>按钮权限决定新增、编辑、删除、审核、导出等动作。</li>
+              <li>数据范围决定本人、团队、部门、全部等可见范围。</li>
+              <li>敏感字段可以独立做字段级权限。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-权限树如何建模" class="article-section">
+            <h2>权限树如何建模</h2>
+            <p>一种可维护的做法是把权限节点抽象为资源树。菜单是资源，按钮也是资源，数据范围是角色或策略绑定的约束。前端根据权限树渲染入口和按钮，后端在接口层再次校验，不能只依赖前端隐藏。</p>
+            <p>对于 CRM，导出、改派、财务字段、订单审核、客户回捞都应该是独立权限点。否则一个普通编辑权限很容易被扩展成过大的能力。</p>
+            <ul>
+              <li>资源节点需要 code、name、type、parent_id。</li>
+              <li>角色绑定资源节点，用户通过角色获得权限。</li>
+              <li>数据范围不要硬编码在菜单节点里。</li>
+              <li>接口必须做服务端鉴权。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-审计和排障" class="article-section">
+            <h2>审计和排障</h2>
+            <p>权限系统必须能解释“为什么这个人看到了这条数据”。没有审计能力，权限问题就会变成猜谜。至少要记录角色变更、资源变更、关键动作和导出行为。</p>
+            <p>当业务开始出现组织架构调整、临时授权、跨团队协作时，审计会成为系统可信度的一部分。</p>
+            <ul>
+              <li>记录谁给谁分配了什么角色。</li>
+              <li>记录敏感动作的操作者、对象、时间和来源。</li>
+              <li>支持查看用户最终权限快照。</li>
+              <li>临时授权要有过期时间。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-知识库中的三层权限模型" class="article-section">
+            <h2>知识库中的三层权限模型</h2>
+            <p>知识库把 CRM 权限拆成菜单权限、按钮/动作权限、数据范围权限三层。这个拆分很关键，因为后台系统里的“能看页面”和“能做动作”不是一回事，“能操作自己的数据”和“能操作全部数据”也不是一回事。</p>
+            <p>菜单权限解决入口，按钮权限解决动作，数据范围解决边界。三者组合之后，才能表达真实岗位差异。</p>
+            <ul>
+              <li>菜单模块：客户管理、订单管理、系统设置、报表中心。</li>
+              <li>操作按钮：新增、编辑、删除、导入、导出、审核、分配、改派。</li>
+              <li>数据范围：本人、团队、部门、全部、指定客户池。</li>
+              <li>字段权限：佣金、返佣、垫付费用等敏感字段单独控制。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-表结构如何支撑权限" class="article-section">
+            <h2>表结构如何支撑权限</h2>
+            <p>知识库中的 CRM 数据库设计建议复用权限分组、权限点、角色、用户角色绑定、数据权限分组和权限变更日志。公开表达时不需要暴露具体业务细节，但模型本身很通用。</p>
+            <p>一个可维护的权限系统通常包含：权限分组表、权限点表、角色表、角色权限关系表、用户角色关系表、数据权限表、组织/员工表，以及操作审计日志。</p>
+            <ul>
+              <li>permission_group 组织权限树。</li>
+              <li>permission 存储具体路由、按钮或动作 code。</li>
+              <li>role 与 role_permission_relation 负责角色授权。</li>
+              <li>data_permission 支撑团队、部门、客户池等范围。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-敏感权限必须拆出来" class="article-section">
+            <h2>敏感权限必须拆出来</h2>
+            <p>知识库里反复强调，导出、改派、回捞、订单审核、财务字段、批量操作、权限配置不能依附普通查看权限。原因很简单：这些动作要么影响数据外流，要么改变客户归属，要么影响资金口径，要么改变系统授权本身。</p>
+            <p>敏感权限的拆分不是增加复杂度，而是给风险单独装开关。</p>
+            <ul>
+              <li>导出权限单独拆分，并记录导出人、条件、数量。</li>
+              <li>改派和回捞要记录原归属、新归属和原因。</li>
+              <li>财务字段可以做到字段级可见。</li>
+              <li>批量权限设置必须有操作日志。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-权限排障-回答为什么" class="article-section">
+            <h2>权限排障：回答为什么</h2>
+            <p>权限问题最难的不是控制，而是解释。当用户问“为什么我看不到这个客户”或“为什么他能导出”，系统要能回答：他有哪些角色，这些角色绑定了哪些权限，数据范围如何计算，是否有临时授权，是否被组织关系限制。</p>
+            <p>因此权限系统最好提供用户最终权限快照。这个快照不一定给所有人看，但运维、管理员和审计需要。</p>
+            <ul>
+              <li>展示用户角色列表。</li>
+              <li>展示最终菜单和按钮权限。</li>
+              <li>展示数据范围来源。</li>
+              <li>展示最近权限变更日志。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="controller-business-dao.html">
+            <span>后端架构</span>
+            <strong>Controller / Business / DAO：复杂业务的容器</strong>
+            <em>17 分钟阅读</em>
+          </a>
+          <a class="related-card" href="customer-assignment-events.html">
+            <span>业务系统</span>
+            <strong>客户分配系统：从顾问 ID 到事件链</strong>
+            <em>19 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

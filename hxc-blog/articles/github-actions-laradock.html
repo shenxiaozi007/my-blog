@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Actions + Laradock：小服务器自动部署 | HXC Knowledge Lab</title>
+    <meta name="description" content="中小规格云服务器要先解决 Swap、SSH 信任链、Deploy Key、容器路径和生产收尾检查。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/github-actions-laradock.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="GitHub Actions + Laradock：小服务器自动部署 | HXC Knowledge Lab" />
+    <meta property="og:description" content="中小规格云服务器要先解决 Swap、SSH 信任链、Deploy Key、容器路径和生产收尾检查。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/github-actions-laradock.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="GitHub Actions + Laradock：小服务器自动部署 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="中小规格云服务器要先解决 Swap、SSH 信任链、Deploy Key、容器路径和生产收尾检查。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "GitHub Actions + Laradock：小服务器自动部署",
+  "description": "中小规格云服务器要先解决 Swap、SSH 信任链、Deploy Key、容器路径和生产收尾检查。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/github-actions-laradock.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "devops, github, laradock, cloud"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">DevOps</p>
+        <h1>GitHub Actions + Laradock：小服务器自动部署</h1>
+        <p class="article-description">中小规格云服务器要先解决 Swap、SSH 信任链、Deploy Key、容器路径和生产收尾检查。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>15 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>devops</span>
+          <span>github</span>
+          <span>laradock</span>
+          <span>cloud</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《来源_Laradock与GitHub_Actions自动化部署》和 Laradock 自动化部署概念页整理，并补充生产部署风险控制。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-小服务器先补基础能力">小服务器先补基础能力</a><a href="#section-2-actions-里的关键点">Actions 里的关键点</a><a href="#section-3-风险控制">风险控制</a><a href="#section-4-生产自动化先解决内存">生产自动化先解决内存</a><a href="#section-5-actions-到服务器-服务器到-github">Actions 到服务器，服务器到 GitHub</a><a href="#section-6-workflow-的安全边界">workflow 的安全边界</a><a href="#section-7-laravel-收尾动作">Laravel 收尾动作</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-小服务器先补基础能力" class="article-section">
+            <h2>小服务器先补基础能力</h2>
+            <p>很多个人项目或小团队项目会部署在配置不高的云服务器上。GitHub Actions 可以很方便地通过 SSH 连接服务器执行发布，但服务器本身需要先准备好 Swap、Docker、Laradock、目录权限和防火墙规则。</p>
+            <p>如果内存不足，composer install 或前端构建可能直接被系统杀掉。自动化部署之前，先让服务器具备稳定执行命令的能力。</p>
+            <ul>
+              <li>低内存机器建议配置 Swap。</li>
+              <li>SSH Key 只给发布需要的权限。</li>
+              <li>生产 .env 不放入 GitHub Secrets 以外的公开位置。</li>
+              <li>容器路径和宿主机路径要写清楚。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-actions-里的关键点" class="article-section">
+            <h2>Actions 里的关键点</h2>
+            <p>GitHub Actions 的流水线适合做拉取代码、上传或远程执行脚本。对于 Laravel + Laradock，通常让服务器自己拉取最新代码或接收 rsync，然后在容器内执行 composer install 和 artisan 命令。</p>
+            <p>docker compose exec 在 CI 非交互环境里要使用 -T，避免 TTY 问题。线上使用 composer install，不使用 composer update。</p>
+            <ul>
+              <li>使用 secrets 保存 SSH_HOST、SSH_USER、SSH_KEY。</li>
+              <li>限制触发分支，例如只在 master 或 tag 发布。</li>
+              <li>docker compose exec -T workspace 执行命令。</li>
+              <li>发布后检查 storage、bootstrap/cache 权限。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-风险控制" class="article-section">
+            <h2>风险控制</h2>
+            <p>自动部署最怕把错误自动化。每条流水线都应该有失败即停止、日志可追踪、回滚路径明确和敏感信息不输出四个要求。</p>
+            <p>如果项目还没有完整测试，至少要在部署前跑基本语法检查、依赖安装检查和关键接口健康检查。</p>
+            <ul>
+              <li>不要在日志打印完整私钥或环境变量。</li>
+              <li>生产发布要记录 commit sha。</li>
+              <li>失败后不要继续执行缓存刷新等后续动作。</li>
+              <li>准备上一版本目录或 Tag 回退方案。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-生产自动化先解决内存" class="article-section">
+            <h2>生产自动化先解决内存</h2>
+            <p>知识库中特别提到，中小规格服务器执行 Composer 容易 OOM，因此建议先开启 4G Swap。这个细节很实际：很多 1 核 2G 或 2 核 4G 的机器，平时跑服务没问题，一到 composer install 就被系统杀掉。</p>
+            <p>Swap 不是性能优化，而是给部署过程一个安全垫。</p>
+            <ul>
+              <li>创建 /swapfile 并设置 600 权限。</li>
+              <li>mkswap、swapon 后写入 /etc/fstab。</li>
+              <li>用 free -m 验证 Swap 是否生效。</li>
+              <li>Composer 仍建议加 --no-dev 和 --optimize-autoloader。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-actions-到服务器-服务器到-github" class="article-section">
+            <h2>Actions 到服务器，服务器到 GitHub</h2>
+            <p>GitHub Actions 部署至少有两段信任：Actions 能登录服务器，服务器能拉取 GitHub 私有仓库。前者通常通过 GitHub Secrets 保存服务器登录私钥，后者通过 GitHub Deploy Keys 保存服务器公钥。</p>
+            <p>这两段不要混淆。Actions 的私钥不是给服务器拉仓库用的；服务器自己的部署公钥才应该加入仓库 Deploy Keys。</p>
+            <ul>
+              <li>Secrets 保存 REMOTE_HOST、REMOTE_USER、SSH_PRIVATE_KEY。</li>
+              <li>服务器生成部署专用 SSH Key。</li>
+              <li>服务器公钥加入 GitHub Deploy Keys。</li>
+              <li>纯拉取部署不建议开启 Deploy Key 写权限。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-workflow-的安全边界" class="article-section">
+            <h2>workflow 的安全边界</h2>
+            <p>很多 workflow 会执行 git reset --hard origin/master。这是可接受的，但前提是服务器目录不保留人工修改。生产服务器应该是可重建环境，而不是开发者临时改代码的地方。</p>
+            <p>另外 docker compose exec 要加 -T，因为 GitHub Actions 是非交互环境。这个小参数经常决定流水线是否卡住。</p>
+            <ul>
+              <li>只监听 master 或 tag 发布。</li>
+              <li>git reset --hard 前确认目标目录无手工变更。</li>
+              <li>docker compose exec -T workspace 执行命令。</li>
+              <li>日志中不要输出完整私钥和环境变量。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-laravel-收尾动作" class="article-section">
+            <h2>Laravel 收尾动作</h2>
+            <p>代码更新和依赖安装完成后，Laravel 项目通常还需要缓存和权限收尾。比如 config:cache、route:cache、view:cache、queue:restart，以及 storage、bootstrap/cache 的写权限修复。</p>
+            <p>这些动作要按项目实际情况选择，不要盲目全跑。比如路由闭包会影响 route:cache，配置动态读取也可能被缓存策略影响。</p>
+            <ul>
+              <li>生产配置稳定时执行 config:cache。</li>
+              <li>确认路由可缓存后再执行 route:cache。</li>
+              <li>队列代码变更后执行 queue:restart。</li>
+              <li>发布后检查 storage 和 bootstrap/cache 权限。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="jenkins-gitlab-laradock.html">
+            <span>DevOps</span>
+            <strong>Jenkins + GitLab + Laradock 自动化部署 SOP</strong>
+            <em>17 分钟阅读</em>
+          </a>
+          <a class="related-card" href="cloudflare-origin-protection.html">
+            <span>DevOps</span>
+            <strong>Cloudflare 源站保护：代理开启只是第一步</strong>
+            <em>13 分钟阅读</em>
+          </a>
+          <a class="related-card" href="openvpn-split-tunnel.html">
+            <span>DevOps</span>
+            <strong>OpenVPN Split Tunnel：只让内网流量走 VPN</strong>
+            <em>13 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

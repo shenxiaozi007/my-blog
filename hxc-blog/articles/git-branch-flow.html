@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Git 分支环境映射：让代码流向可控 | HXC Knowledge Lab</title>
+    <meta name="description" content="用 master、beta、dev、fix 对应生产、测试、需求和修复，避免环境污染和合并方向混乱。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/git-branch-flow.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="Git 分支环境映射：让代码流向可控 | HXC Knowledge Lab" />
+    <meta property="og:description" content="用 master、beta、dev、fix 对应生产、测试、需求和修复，避免环境污染和合并方向混乱。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/git-branch-flow.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Git 分支环境映射：让代码流向可控 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="用 master、beta、dev、fix 对应生产、测试、需求和修复，避免环境污染和合并方向混乱。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Git 分支环境映射：让代码流向可控",
+  "description": "用 master、beta、dev、fix 对应生产、测试、需求和修复，避免环境污染和合并方向混乱。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/git-branch-flow.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "team, git, ci"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">团队规范</p>
+        <h1>Git 分支环境映射：让代码流向可控</h1>
+        <p class="article-description">用 master、beta、dev、fix 对应生产、测试、需求和修复，避免环境污染和合并方向混乱。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>14 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>team</span>
+          <span>git</span>
+          <span>ci</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于知识库中的《Git 使用规范》《后端规范》《概念_分支环境映射》《概念_语义化提交规范》《概念_质量门禁与CI流程》整理，并做了公开化扩展。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-为什么分支要映射环境">为什么分支要映射环境</a><a href="#section-2-一次需求从开始到上线">一次需求从开始到上线</a><a href="#section-3-容易踩的坑">容易踩的坑</a><a href="#section-4-知识库里的标准命令流">知识库里的标准命令流</a><a href="#section-5-分支命名也是沟通接口">分支命名也是沟通接口</a><a href="#section-6-质量门禁如何接入这套流程">质量门禁如何接入这套流程</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-为什么分支要映射环境" class="article-section">
+            <h2>为什么分支要映射环境</h2>
+            <p>分支规范的价值不是让提交历史看起来整齐，而是让代码在不同阶段有明确的停靠点。生产环境、测试环境、需求开发和线上修复面对的是完全不同的风险，混在一起就会出现“测试代码误上生产”“修复被需求覆盖”“多人同时改 beta 不知道谁负责”的问题。</p>
+            <p>一个小团队最实用的模型，是把 master 作为生产事实，beta 作为测试集成，dev/* 作为需求开发，fix/* 作为线上修复。这样每次代码移动都带着语义，评审、部署和回滚也有共同语言。</p>
+            <ul>
+              <li>master 只承载已经上线或即将上线的稳定代码。</li>
+              <li>beta 用于集成测试，不直接作为长期开发分支。</li>
+              <li>dev/feature-name 从 master 拉出，完成后合并到 beta 提测。</li>
+              <li>fix/issue-name 从 master 拉出，修复后优先合并 beta 验证，再回 master。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-一次需求从开始到上线" class="article-section">
+            <h2>一次需求从开始到上线</h2>
+            <p>需求开始时，开发者从 master 拉出 dev/xxx 分支。这个动作意味着它继承的是线上稳定版本，而不是其他半成品需求。开发完成后先自测，再发起合并到 beta。beta 部署到测试环境后，测试只需要确认这个需求以及 beta 上已经合并的需求集合。</p>
+            <p>上线时，从通过验收的提交合并回 master，并打 Tag 或记录发布版本。上线后 master 继续作为新的事实源。这样的流程看起来多一步，但它把“谁的代码在哪个环境”这件事说清楚了。</p>
+            <ul>
+              <li>需求分支命名最好能看出模块和目标，例如 dev/customer-import。</li>
+              <li>提交信息使用 feat、fix、refactor、docs 等语义前缀。</li>
+              <li>合并前至少跑 lint、test、build 三类检查。</li>
+              <li>上线记录要包含分支、提交、版本、执行人和回滚方案。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-容易踩的坑" class="article-section">
+            <h2>容易踩的坑</h2>
+            <p>最常见的问题是把 beta 当成公共开发分支。短期看大家都很方便，长期看它会变成一个没人说得清的混合态。另一个问题是修复线上问题时直接改 beta，结果修复无法干净回到 master，或者上线时带入未验收需求。</p>
+            <p>分支规范越简单，越要坚持边界。团队可以根据规模扩展 release/*、hotfix/*，但基础原则不变：生产事实要稳定，测试集成要可解释，开发分支要短生命周期。</p>
+            <ul>
+              <li>禁止在 master / beta 直接开发。</li>
+              <li>禁止把未验收需求偷偷带入上线包。</li>
+              <li>修复分支必须能追溯到问题单或事故记录。</li>
+              <li>长期分支需要定期清理，避免成为第二个 beta。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-知识库里的标准命令流" class="article-section">
+            <h2>知识库里的标准命令流</h2>
+            <p>知识库里对分支环境映射的定义很明确：master、beta、dev/*、fix/* 不是随意命名，而是分别对应生产、测试、需求开发和缺陷修复。真正重要的是合并方向。分支策略一旦允许 beta 反向污染 master 或 dev，就会把测试环境里的半成品带进生产链路。</p>
+            <p>更稳的命令流是：从 master 拉 dev/* 或 fix/*，开发过程中持续同步 master，提测时合并到 beta，测试通过后再合并 master 并打 Tag。上线之后根据需要由 master 回写 beta，让测试环境重新靠近生产事实。</p>
+            <ul>
+              <li>需求分支：master -&gt; dev/{日期}/{需求} -&gt; beta -&gt; master。</li>
+              <li>修复分支：master -&gt; fix/{日期}/{问题} -&gt; beta 验证 -&gt; master。</li>
+              <li>环境同步：master 有更新时，开发分支及时合并 master。</li>
+              <li>禁止方向：不要把 beta 合并回 dev/*、fix/* 或 master。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-分支命名也是沟通接口" class="article-section">
+            <h2>分支命名也是沟通接口</h2>
+            <p>分支命名不是给 Git 看，而是给人看。一个好的分支名应该回答三个问题：这是需求还是修复，什么时候创建，处理什么事情。知识库中的后端规范建议使用 dev/{日期}/{需求} 和 fix/{日期}/{需求}，并保持全小写路径化格式。</p>
+            <p>路径化命名能让 Jenkins、GitLab、发布脚本和人工评审都更容易识别上下文。它也方便之后按日期和需求回查变更。</p>
+            <ul>
+              <li>dev/2026-05-18/customer-import 表示客户导入需求。</li>
+              <li>fix/2026-05-18/order-status 表示订单状态缺陷修复。</li>
+              <li>分支名避免中文、空格和过长描述。</li>
+              <li>前后端如果协作同一需求，建议使用同一需求段。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-质量门禁如何接入这套流程" class="article-section">
+            <h2>质量门禁如何接入这套流程</h2>
+            <p>分支只解决代码流向，不能替代质量检查。知识库里的质量门禁强调 lint、type-check、test、build 应该进入提交和合并阶段。最小可行做法是本地提交前跑基础检查，PR 或合并 beta 前由 CI 跑完整检查。</p>
+            <p>当 CI 失败时，不要靠人工口头承诺先合并。门禁的意义就是把低级错误挡在主干之外。</p>
+            <ul>
+              <li>前端：lint、type-check、unit test、build。</li>
+              <li>后端：语法检查、单元测试、数据库迁移检查、接口冒烟。</li>
+              <li>合并 beta 前要有需求自测记录。</li>
+              <li>合并 master 前要有验收结论和回滚说明。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="frontend-vs-backend-standards.html">
+            <span>团队规范</span>
+            <strong>前端规范 vs 后端规范：同一交付体系的两侧</strong>
+            <em>16 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>

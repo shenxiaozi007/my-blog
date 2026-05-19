@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controller / Business / DAO：复杂业务的容器 | HXC Knowledge Lab</title>
+    <meta name="description" content="把输入输出、规则编排、事务边界和数据访问拆开，才能让需求变更有清晰落点。" />
+    <meta name="theme-color" content="#f6f0df" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="https://my.hxcbox.cn/articles/controller-business-dao.html" />
+    <meta property="og:site_name" content="HXC Knowledge Lab" />
+    <meta property="og:title" content="Controller / Business / DAO：复杂业务的容器 | HXC Knowledge Lab" />
+    <meta property="og:description" content="把输入输出、规则编排、事务边界和数据访问拆开，才能让需求变更有清晰落点。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://my.hxcbox.cn/articles/controller-business-dao.html" />
+    <meta property="article:published_time" content="2026-05-18" />
+    <meta property="article:modified_time" content="2026-05-18" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Controller / Business / DAO：复杂业务的容器 | HXC Knowledge Lab" />
+    <meta name="twitter:description" content="把输入输出、规则编排、事务边界和数据访问拆开，才能让需求变更有清晰落点。" />
+    <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Controller / Business / DAO：复杂业务的容器",
+  "description": "把输入输出、规则编排、事务边界和数据访问拆开，才能让需求变更有清晰落点。",
+  "datePublished": "2026-05-18",
+  "dateModified": "2026-05-18",
+  "inLanguage": "zh-CN",
+  "mainEntityOfPage": "https://my.hxcbox.cn/articles/controller-business-dao.html",
+  "author": {
+    "@type": "Person",
+    "name": "HXC"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "HXC Knowledge Lab"
+  },
+  "keywords": "backend, laravel, dao, business"
+}</script>
+  </head>
+  <body>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="../index.html" aria-label="回到首页">
+        <span class="brand-mark">HX</span>
+        <span class="brand-copy">
+          <strong>HXC Knowledge Lab</strong>
+          <em>工程交付 / 知识复利 / 系统化表达</em>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="主导航">
+        <a href="../index.html#map">知识地图</a>
+        <a href="../index.html#topics">主题</a>
+        <a href="../index.html#notes">文章</a>
+        <a href="../index.html#systems">方法</a>
+        <a href="../index.html#about">关于</a>
+      </nav>
+    </header>
+
+    <main class="article-shell">
+      <article class="article-page">
+        <a class="back-link" href="../index.html#notes">返回文章列表</a>
+        <p class="eyebrow article-category">后端架构</p>
+        <h1>Controller / Business / DAO：复杂业务的容器</h1>
+        <p class="article-description">把输入输出、规则编排、事务边界和数据访问拆开，才能让需求变更有清晰落点。</p>
+        <div class="article-meta">
+          <span>2026-05-18</span>
+          <span>17 分钟阅读</span>
+        </div>
+        <div class="article-tags">
+          <span>backend</span>
+          <span>laravel</span>
+          <span>dao</span>
+          <span>business</span>
+        </div>
+        <div class="source-note"><strong>知识库依据</strong><p>基于《后端规范》《概念_后端分层架构_Controller_Business_DAO》和后端安全稳定基线整理。</p></div>
+        <div class="article-layout">
+          <aside class="article-toc" aria-label="文章目录">
+            <strong>目录</strong>
+            <nav><a href="#section-1-三层各自解决什么问题">三层各自解决什么问题</a><a href="#section-2-事务边界放在哪里">事务边界放在哪里</a><a href="#section-3-安全和可维护性底线">安全和可维护性底线</a><a href="#section-4-一个判断标准-代码在回答谁的问题">一个判断标准：代码在回答谁的问题</a><a href="#section-5-用业务动作命名-business">用业务动作命名 Business</a><a href="#section-6-dao-的边界-不是贫血-也不是万能">DAO 的边界：不是贫血，也不是万能</a><a href="#section-7-测试策略也跟分层有关">测试策略也跟分层有关</a></nav>
+          </aside>
+          <div class="article-content">
+          <section id="section-1-三层各自解决什么问题" class="article-section">
+            <h2>三层各自解决什么问题</h2>
+            <p>Controller / Business / DAO 的分层不是为了显得架构完整，而是为了让代码有稳定的承载位置。Controller 面向 HTTP 或 RPC 协议，负责参数、鉴权、响应格式和错误映射。Business 面向业务动作，负责流程、规则、事务和领域判断。DAO 面向数据，负责查询、写入、分页、锁和 SQL 安全。</p>
+            <p>当需求变复杂时，混写代码会迅速失控。比如客户分配既要查客户状态，又要查顾问排班，还要写分配记录和发送通知。如果全放 Controller，测试和复用都会困难。</p>
+            <ul>
+              <li>Controller：薄，稳定，少业务判断。</li>
+              <li>Business：表达一个可命名的业务动作。</li>
+              <li>DAO：围绕数据对象封装读写。</li>
+              <li>DTO / Request：承接输入结构和校验结果。</li>
+            </ul>
+          </section>
+
+          <section id="section-2-事务边界放在哪里" class="article-section">
+            <h2>事务边界放在哪里</h2>
+            <p>事务应该靠近业务流程，而不是散落在 DAO 里。DAO 只知道自己在写某张表，但不知道这次业务动作需要几张表一起成功。Business 层能看到完整流程，因此更适合打开事务、捕获异常、决定回滚和补偿。</p>
+            <p>如果某些 DAO 方法内部自行开启事务，会让上层组合时变得不可预测。小项目早期可以宽松，但一旦出现跨表、跨服务、跨事件的动作，就需要把事务边界上移。</p>
+            <ul>
+              <li>单表简单写入可以封装在 DAO。</li>
+              <li>跨表一致性由 Business 管理事务。</li>
+              <li>外部通知不要放进数据库事务内部长期阻塞。</li>
+              <li>失败后要有明确的重试、补偿或人工处理入口。</li>
+            </ul>
+          </section>
+
+          <section id="section-3-安全和可维护性底线" class="article-section">
+            <h2>安全和可维护性底线</h2>
+            <p>后端分层还承载安全底线。原生 SQL 必须参数绑定，不能拼接用户输入；配置读取走 config，不在业务代码随手 env；表结构变化走 Migration，不能手动在线上改表后忘记同步。</p>
+            <p>这些要求看起来基础，但它们决定了系统能否多人维护。规范不是限制开发速度，而是减少后续排障成本。</p>
+            <ul>
+              <li>SQL 参数绑定，避免注入风险。</li>
+              <li>敏感配置不进入仓库。</li>
+              <li>Migration 要有 down 或明确不可逆说明。</li>
+              <li>日志记录业务关键 ID，不记录敏感明文。</li>
+            </ul>
+          </section>
+
+          <section id="section-4-一个判断标准-代码在回答谁的问题" class="article-section">
+            <h2>一个判断标准：代码在回答谁的问题</h2>
+            <p>判断一段代码应该放在哪一层，可以问它在回答谁的问题。Controller 回答“HTTP 请求如何进入系统、如何返回”；Business 回答“这件业务动作如何完成”；DAO 回答“数据如何被查询和写入”。</p>
+            <p>如果 Controller 里出现大量 if、事务、循环写库、跨表查询，它已经越界。如果 DAO 里开始判断客户是否能分配、订单是否能审核，它也越界。</p>
+            <ul>
+              <li>协议问题放 Controller。</li>
+              <li>业务流程放 Business。</li>
+              <li>数据读写放 DAO。</li>
+              <li>跨层复用能力沉淀到基类、工具或领域服务。</li>
+            </ul>
+          </section>
+
+          <section id="section-5-用业务动作命名-business" class="article-section">
+            <h2>用业务动作命名 Business</h2>
+            <p>Business 不应该只叫 CommonService 或 DataService。它最好以业务动作命名，例如 AssignCustomerBusiness、ApproveOrderBusiness、TransferCustomerBusiness。这样代码结构会自然贴近业务语言。</p>
+            <p>命名清楚之后，评审也更容易判断职责是否膨胀：一个“客户分配”业务可以包含规则校验、候选过滤、事务写入和事件记录，但不应该顺手处理订单审核。</p>
+            <ul>
+              <li>一个 Business 方法最好表达一个完整业务动作。</li>
+              <li>复杂动作内部可以拆私有步骤，但外部接口保持语义清楚。</li>
+              <li>跨多个业务动作的共性逻辑再抽公共服务。</li>
+              <li>不要为了复用把所有流程塞进一个万能 Service。</li>
+            </ul>
+          </section>
+
+          <section id="section-6-dao-的边界-不是贫血-也不是万能" class="article-section">
+            <h2>DAO 的边界：不是贫血，也不是万能</h2>
+            <p>DAO 负责数据域，不代表它只能写一行 ORM。它可以封装复杂查询、分页、条件组合、锁和批量写入。但 DAO 不应该知道完整业务流程，也不应该决定是否发送通知、是否审核通过、是否触发回捞。</p>
+            <p>数据访问层稳定之后，后续换缓存、加索引、优化 SQL，都不会影响上层业务表达。</p>
+            <ul>
+              <li>DAO 方法返回结构要稳定，避免把 ORM 细节泄漏给上层。</li>
+              <li>原生 SQL 必须参数绑定。</li>
+              <li>复杂查询要说明索引假设。</li>
+              <li>写方法要明确是否参与外部事务。</li>
+            </ul>
+          </section>
+
+          <section id="section-7-测试策略也跟分层有关" class="article-section">
+            <h2>测试策略也跟分层有关</h2>
+            <p>分层清楚后，测试也更容易设计。Controller 测接口契约和权限；Business 测业务规则、事务和异常路径；DAO 测查询条件和数据写入。没有分层时，测试只能从接口一路打到底，速度慢且定位困难。</p>
+            <p>对于高风险业务，建议给 Business 层建立场景测试：成功、重复提交、权限不足、数据状态不合法、并发冲突、外部依赖失败。</p>
+            <ul>
+              <li>Controller：请求参数、响应格式、鉴权。</li>
+              <li>Business：规则分支、事务回滚、幂等。</li>
+              <li>DAO：查询条件、分页、锁、索引命中。</li>
+              <li>端到端测试只覆盖关键链路，不替代分层测试。</li>
+            </ul>
+          </section></div>
+        </div>
+      </article>
+
+      <section class="related-panel">
+        <div>
+          <p class="eyebrow">Related</p>
+          <h2>继续阅读</h2>
+        </div>
+        <div class="related-grid">
+          <a class="related-card" href="frontend-vs-backend-standards.html">
+            <span>团队规范</span>
+            <strong>前端规范 vs 后端规范：同一交付体系的两侧</strong>
+            <em>16 分钟阅读</em>
+          </a>
+          <a class="related-card" href="crm-permission-tree.html">
+            <span>业务系统</span>
+            <strong>CRM 权限树：菜单、按钮、数据范围为什么要拆开</strong>
+            <em>18 分钟阅读</em>
+          </a>
+          <a class="related-card" href="customer-assignment-events.html">
+            <span>业务系统</span>
+            <strong>客户分配系统：从顾问 ID 到事件链</strong>
+            <em>19 分钟阅读</em>
+          </a></div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <span>HXC Knowledge Lab</span>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="../assets/app.js" defer></script>
+  </body>
+</html>
