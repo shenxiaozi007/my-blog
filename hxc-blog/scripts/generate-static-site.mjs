@@ -58,6 +58,7 @@ function header(relativePrefix = "../") {
         <a href="${relativePrefix}index.html#notes">文章</a>
         <a href="${relativePrefix}index.html#systems">方法</a>
         <a href="${relativePrefix}index.html#about">关于</a>
+        <a href="https://my.hxcbox.cn/resume">简历</a>
       </nav>
     </header>`;
 }
